@@ -1,0 +1,30 @@
+{
+  "name": "skyline-bot",
+  "version": "1.0.0",
+  "description": "This is the bot for the official Skyline Emulator Discord Server",
+  "main": "main.js",
+  "scripts": {
+    "run": "tsc && node build/main.js",
+    "tsc": "tsc",
+    "tscw": "tsc -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PixelyIon/skyline-bot.git"
+  },
+  "author": "https://github.com/PixelyIon/skyline-bot/contributors",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/PixelyIon/skyline-bot/issues"
+  },
+  "homepage": "https://github.com/PixelyIon/skyline-bot#readme",
+  "dependencies": {
+    "@types/node-fetch": "^2.5.4",
+    "discord.js": "^11.5.1",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.14",
+    "typescript": "^3.7.3"
+  }
+}
