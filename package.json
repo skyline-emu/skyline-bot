@@ -4,7 +4,7 @@
   "description": "This is the bot for the official Skyline Emulator Discord Server",
   "main": "main.js",
   "scripts": {
-    "run": "tsc && node build/main.js",
+    "start": "tsc && node build/main.js",
     "tsc": "tsc",
     "tscw": "tsc -w"
   },
