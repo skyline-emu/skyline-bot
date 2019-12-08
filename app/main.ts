@@ -32,7 +32,9 @@ client.on('message', msg => {
           console.warn(e)
         else
           console.warn(`Caught Error: ${e}`)
-        msg.channel.send(embed)
+        msg.channel.send(embed).then(() => {
+          msg.delete(config.deleteTime)
+        })
       })
     } else if (cmd == "help" || cmd == "h") {
       let embed = new RichEmbed({
