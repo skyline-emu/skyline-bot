@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsc && node build/main.js",
     "tsc": "tsc",
-    "tscw": "tsc-watch --onSuccess \"node ./build/main.js\""
+    "tscw": "tsc-watch --onSuccess \"node ./build/main.js\"",
+    "fmt": "prettier --write \"**/*.ts\""
   },
   "repository": {
     "type": "git",

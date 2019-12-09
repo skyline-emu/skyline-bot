@@ -42,12 +42,12 @@ client.on('message', msg => {
       });
       for (const command of commandVec)
         embed.addField(`\`${command.name}\` or \`${command.shortname}\``, command.desc, true)
-      if(!msg.author.dmChannel)
-        msg.author.createDM().then((channel)=>{channel.send(embed)})
+      if (!msg.author.dmChannel)
+        msg.author.createDM().then((channel) => { channel.send(embed) })
       else
         msg.author.dmChannel.send(embed)
+      msg.delete(config.deleteTime)
     }
-    msg.delete(config.deleteTime)
   }
 });
 

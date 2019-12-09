@@ -1,3 +1,4 @@
 export * from "./ping";
 export * from "./release";
-export * from "./move";
+export * from "./moveembed";
+export * from "./movewebhook";
