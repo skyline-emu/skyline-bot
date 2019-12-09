@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node build/main.js",
     "tsc": "tsc",
-    "tscw": "tsc -w"
+    "tscw": "tsc-watch --onSuccess \"node ./build/main.js\""
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.14",
+    "tsc-watch": "^4.0.0",
     "typescript": "^3.7.3"
   }
 }
