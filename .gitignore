@@ -108,3 +108,8 @@ config.json
 
 # Build Folder
 build/
+
+# Visual Studio
+.vs/
+bin/
+obj/

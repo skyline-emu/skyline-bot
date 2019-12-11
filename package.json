@@ -4,6 +4,8 @@
   "description": "This is the bot for the official Skyline Emulator Discord Server",
   "main": "main.js",
   "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
     "start": "tsc && node build/main.js",
     "tsc": "tsc",
     "tscw": "tsc-watch --onSuccess \"node ./build/main.js\"",
