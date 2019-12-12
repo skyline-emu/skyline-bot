@@ -1,4 +1,4 @@
-import { EventMethod } from "./event"
+import { EventMethod } from "./event";
 import { Emoji, MessageReaction } from "discord.js";
 
 const eventMap = new Map(Object.entries(
