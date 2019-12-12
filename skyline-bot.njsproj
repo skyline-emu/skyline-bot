@@ -39,6 +39,7 @@
   <ItemGroup>
     <Folder Include="app\" />
     <Folder Include="app\commands\" />
+    <Folder Include="app\events\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app\commands\command.ts" />
@@ -47,6 +48,13 @@
     <TypeScriptCompile Include="app\commands\movewebhook.ts" />
     <TypeScriptCompile Include="app\commands\ping.ts" />
     <TypeScriptCompile Include="app\commands\release.ts" />
+    <TypeScriptCompile Include="app\events\event.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="app\events\index.ts" />
+    <TypeScriptCompile Include="app\events\raw.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="app\main.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
