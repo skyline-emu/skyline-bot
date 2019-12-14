@@ -30,6 +30,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="app\filterArray.json" />
     <Content Include="app\array.json" />
     <Content Include="app\config.example.json" />
     <Content Include="app\config.json" />
@@ -53,6 +54,7 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="app\events\index.ts" />
+    <TypeScriptCompile Include="app\events\message.ts" />
     <TypeScriptCompile Include="app\events\messageReactionRemove.ts" />
     <TypeScriptCompile Include="app\events\messageReactionAdd.ts">
       <SubType>Code</SubType>
