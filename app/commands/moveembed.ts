@@ -1,10 +1,10 @@
-import { Command, CommandError } from "./command"
+import { Command, CommandError, AccessLevel } from "./command"
 import config from "../config.json"
-import { Message, RichEmbed, Snowflake, TextChannel, Permissions, PermissionResolvable, GuildChannel } from "discord.js";
+import { Message, RichEmbed, Snowflake, TextChannel, Permissions, GuildChannel } from "discord.js";
 
 export class MoveEmbed extends Command {
     constructor() {
-        super("moveemb", "meb", "Moves the specified amount of messages to another channel using embeds `(me {Amount} {Channel})`")
+        super("moveemb", "meb", "Moves the specified amount of messages to another channel using embeds `(me {Amount} {Channel})`", AccessLevel.Admin)
     }
     async run(msg: Message, args: string[]): Promise<void> {
         if (args.length < 3)

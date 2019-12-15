@@ -1,10 +1,10 @@
-import { Command } from "./command"
-import config from "../config.json"
-import { Message, RichEmbed } from "discord.js";
+import { Command, AccessLevel } from "./command"
+import config                   from "../config.json"
+import { Message, RichEmbed }   from "discord.js";
 
 export class Ping extends Command {
     constructor() {
-        super("ping", "p", "Replies with Pong")
+        super("ping", "p", "Replies with Pong", AccessLevel.User)
     }
 
     async run(msg: Message, args: string[]): Promise<void> {

@@ -1,10 +1,10 @@
-import { Message, RichEmbed } from "discord.js";
-import { Command, CommandError } from "./command"
-import fetch from "node-fetch";
+import { Message, RichEmbed }                 from "discord.js";
+import { Command, CommandError, AccessLevel } from "./command"
+import fetch                                  from "node-fetch";
 
 export class Release extends Command {
     constructor() {
-        super("release", "r", "The latest release from the most recent commit, you can specify the branch `(r {Branch})`")
+        super("release", "r", "The latest release from the most recent commit, you can specify the branch `(r {Branch})`", AccessLevel.User)
     }
 
     async run(msg: Message, args: string[]): Promise<void> {

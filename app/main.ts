@@ -1,41 +1,57 @@
-import { Client, RichEmbed }     from "discord.js";
-import config                    from "./config.json"
-import * as events               from "./events"
-import * as commands             from "./commands"
-import { EventMethod }           from "./events/event.js";
-import { Command, CommandError } from "./commands/command.js";
+import { Client, RichEmbed, GuildMember }     from "discord.js";
+import config                                 from "./config.json";
+import * as events                            from "./events";
+import * as commands                          from "./commands";
+import { EventMethod }                        from "./events/event.js";
+import { AccessLevel, Command, CommandError } from "./commands/command.js";
+
+let accessMap = new Map<string, AccessLevel>
+([
+    ["546093540166336532", AccessLevel.Moderator],
+    ["545842302409768968", AccessLevel.Admin]
+])
 
 const client   = new Client();
 let commandMap = new Map<string, Command>();
 let commandVec = new Array<Command>();
 
-Object.values(events).forEach((eventT) => {
+Object.values(events).forEach((eventT) =>
+{
     let event: EventMethod = new eventT();
 
-    client.on(event.name, (...args: any) => {
+    client.on(event.name, (...args: any) =>
+    {
         event.run(client, ...args);
     });
 });
 
-Object.values(commands).forEach((commandT) => {
+Object.values(commands).forEach((commandT) =>
+{
     let command: Command = new commandT();
 
-    commandMap.set(command.name, command);
+    commandMap.set(command.name,      command);
     commandMap.set(command.shortname, command);
     commandVec.push(command);
 });
 
-client.on("message", msg => {
+client.on("message", async msg =>
+{
     if (!msg.content.startsWith(config.prefix) || (msg.author.bot)) return;
 
     let input       = msg.content.split(" ");
     let cmd: string = input[0].substr(config.prefix.length);
     const command   = commandMap.get(cmd);
 
-    if (command != undefined) {
-        command.run(msg, input).then(() => {
+    if (command != undefined)
+    {
+        let member: GuildMember = await msg.guild.fetchMember(msg.author);
+        if (command.access != AccessLevel.User && !member.roles.has(getKeyByValue(accessMap, command.access))) return;
+
+        command.run(msg, input).then(() =>
+        {
             msg.delete(config.deleteTime);
-        }).catch((e) => {
+        }).catch((e) =>
+        {
             let embed = new RichEmbed({ "title": "**An Error was Encountered**" });
 
             if (e instanceof CommandError)
@@ -45,12 +61,14 @@ client.on("message", msg => {
             else
                 console.warn(`Caught Error: ${e}`);
 
-            msg.channel.send(embed).then(() => {
+            msg.channel.send(embed).then(() =>
+            {
                 msg.delete(config.deleteTime);
             });
         });
     }
-    else if (cmd == "help" || cmd == "h") {
+    else if (cmd == "help" || cmd == "h")
+    {
         let embed = new RichEmbed({ "title": "**Bot Commands**" });
 
         for (const command of commandVec)
@@ -63,5 +81,10 @@ client.on("message", msg => {
         msg.delete(config.deleteTime);
     }
 });
+
+function getKeyByValue(object: any, value: any)
+{
+    return Object.keys(object).find(key => object[key] === value)!!;
+}
 
 client.login(config.token);

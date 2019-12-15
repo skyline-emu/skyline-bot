@@ -1,10 +1,10 @@
-import { Command, CommandError } from "./command"
+import { Command, CommandError, AccessLevel } from "./command"
 import config from "../config.json"
 import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions, Attachment } from "discord.js";
 
 export class MoveWebhook extends Command {
     constructor() {
-        super("movewh", "mwh", "Moves the specified amount of messages to another channel using Webhooks `(mw {Amount} {Channel})`")
+        super("move", "mwh", "Moves the specified amount of messages to another channel using Webhooks `(mw {Amount} {Channel})`", AccessLevel.Admin)
     }
     async run(msg: Message, args: string[]): Promise<void> {
         if (args.length < 3)
