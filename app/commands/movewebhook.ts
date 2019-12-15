@@ -1,6 +1,6 @@
 import { Command, CommandError, AccessLevel } from "./command"
 import config from "../config.json"
-import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions, Attachment } from "discord.js";
+import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions } from "discord.js";
 
 export class MoveWebhook extends Command {
     constructor() {

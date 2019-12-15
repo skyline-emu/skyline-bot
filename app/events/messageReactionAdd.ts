@@ -1,6 +1,6 @@
 import { EventMethod } from "./event";
 import { Client, MessageReaction, User, GuildMember } from "discord.js";
-import array from "../array.json";
+import array from "../roleArray.json";
 
 export class MessageReactionAdd extends EventMethod
 {
