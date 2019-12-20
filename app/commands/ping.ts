@@ -4,7 +4,7 @@ import { Message, RichEmbed }   from "discord.js";
 
 export class Ping extends Command {
     constructor() {
-        super("ping", "p", "Replies with Pong", AccessLevel.User)
+        super("ping", AccessLevel.User, "Replies with Pong", "p")
     }
 
     async run(msg: Message, args: string[]): Promise<void> {

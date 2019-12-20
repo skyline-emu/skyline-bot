@@ -4,7 +4,7 @@ import fetch                                  from "node-fetch";
 
 export class Release extends Command {
     constructor() {
-        super("release", "r", "The latest release from the most recent commit, you can specify the branch `(r {Branch})`", AccessLevel.User)
+        super("release", AccessLevel.User, "The latest release from the most recent commit, you can specify the branch `(r {Branch})`", "r")
     }
 
     async run(msg: Message, args: string[]): Promise<void> {

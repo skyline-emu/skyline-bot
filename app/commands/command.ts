@@ -11,16 +11,16 @@ export enum AccessLevel
 export abstract class Command
 {
     name:      string;
-    shortname: string;
-    desc:      string;
     access:    AccessLevel;
+    desc:      string;
+    shortname: string;
 
-    constructor(name: string, shortname: string, desc: string, access: AccessLevel)
+    constructor(name: string, access: AccessLevel, desc: string, shortname?: string)
     {
         this.name      = name
-        this.shortname = shortname
-        this.desc      = desc
         this.access    = access
+        this.desc      = desc
+        this.shortname = shortname!
     }
 
     async abstract run(msg: Message, args: string[]): Promise<void>;

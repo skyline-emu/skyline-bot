@@ -5,7 +5,7 @@ export class Say extends Command
 {
     constructor()
     {
-        super("say", "s", "Repeats what you say", AccessLevel.Moderator)
+        super("say", AccessLevel.Moderator, "Repeats what you say")
     }
 
     async run(msg: Message, args: string[]): Promise<void>
