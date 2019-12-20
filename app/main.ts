@@ -1,14 +1,14 @@
-import { Client, RichEmbed, GuildMember }     from "discord.js";
-import config                                 from "./config.json";
-import * as events                            from "./events";
-import * as commands                          from "./commands";
-import { EventMethod }                        from "./events/event.js";
-import { AccessLevel, Command, CommandError } from "./commands/command.js";
+import { Client, RichEmbed, GuildMember, Snowflake } from "discord.js";
+import config                                        from "./config.json";
+import * as events                                   from "./events";
+import * as commands                                 from "./commands";
+import { EventMethod }                               from "./events/event.js";
+import { AccessLevel, Command, CommandError }        from "./commands/command.js";
 
-let accessMap = new Map<string, AccessLevel>
+let accessMap = new Map<AccessLevel, Snowflake>
 ([
-    ["546093540166336532", AccessLevel.Moderator],
-    ["545842302409768968", AccessLevel.Admin]
+    [AccessLevel.Admin,     "545842302409768968"],
+    [AccessLevel.Moderator, "546093540166336532"]
 ])
 
 const client   = new Client();
@@ -45,7 +45,7 @@ client.on("message", async msg =>
     if (command != undefined)
     {
         let member: GuildMember = await msg.guild.fetchMember(msg.author);
-        if (command.access != AccessLevel.User && !member.roles.has(getKeyByValue(accessMap, command.access))) return;
+        if (command.access != AccessLevel.User && !member.roles.has(accessMap.get(command.access)!)) return;
 
         command.run(msg, input).then(() =>
         {
@@ -81,10 +81,5 @@ client.on("message", async msg =>
         msg.delete(config.deleteTime);
     }
 });
-
-function getKeyByValue(object: any, value: any)
-{
-    return Object.keys(object).find(key => object[key] === value)!!;
-}
 
 client.login(config.token);
