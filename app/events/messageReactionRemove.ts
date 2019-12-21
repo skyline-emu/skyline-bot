@@ -6,7 +6,7 @@ export class MessageReactionRemove extends EventMethod
 {
 	constructor()
 	{
-		super("messageReactionRemove")
+		super("messageReactionRemove");
 	}
 
 	async run(client: Client, reaction: MessageReaction, user: User): Promise<void>

@@ -5,7 +5,7 @@ export class Ban extends Command
 {
     constructor()
     {
-        super("execute", AccessLevel.Moderator, "publicly executes the users that are mentioned")
+        super("execute", AccessLevel.Moderator, "publicly executes the users that are mentioned");
     }
 
     async run(msg: Message, args: string[]): Promise<void>

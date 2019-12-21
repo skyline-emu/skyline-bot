@@ -4,7 +4,7 @@ import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessage
 
 export class MoveWebhook extends Command {
     constructor() {
-        super("move", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks `(mw {Amount} {Channel})`", "mwh")
+        super("move", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks `(mw {Amount} {Channel})`", "mwh");
     }
     async run(msg: Message, args: string[]): Promise<void> {
         if (args.length < 3)

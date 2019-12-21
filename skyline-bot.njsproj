@@ -30,7 +30,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="app\filterArray.json" />
     <Content Include="app\roleArray.json" />
     <Content Include="app\config.example.json" />
     <Content Include="app\config.json" />
@@ -42,8 +41,10 @@
     <Folder Include="app\" />
     <Folder Include="app\commands\" />
     <Folder Include="app\events\" />
+    <Folder Include="app\filters\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="app\commands\help.ts" />
     <TypeScriptCompile Include="app\commands\command.ts" />
     <TypeScriptCompile Include="app\commands\index.ts" />
     <TypeScriptCompile Include="app\commands\moveembed.ts" />
@@ -56,15 +57,22 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="app\events\index.ts" />
-    <TypeScriptCompile Include="app\events\message.ts" />
     <TypeScriptCompile Include="app\events\messageReactionRemove.ts" />
     <TypeScriptCompile Include="app\events\messageReactionAdd.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="app\events\message.ts" />
     <TypeScriptCompile Include="app\events\ready.ts" />
     <TypeScriptCompile Include="app\events\raw.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="app\filters\filter.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="app\filters\index.ts" />
+    <TypeScriptCompile Include="app\filters\commandCheck.ts" />
+    <TypeScriptCompile Include="app\filters\permission.ts" />
+    <TypeScriptCompile Include="app\filters\log.ts" />
     <TypeScriptCompile Include="app\main.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
