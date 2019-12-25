@@ -48,7 +48,7 @@
     <TypeScriptCompile Include="app\commands\command.ts" />
     <TypeScriptCompile Include="app\commands\index.ts" />
     <TypeScriptCompile Include="app\commands\moveembed.ts" />
-    <TypeScriptCompile Include="app\commands\movewebhook.ts" />
+    <TypeScriptCompile Include="app\commands\move.ts" />
     <TypeScriptCompile Include="app\commands\ban.ts" />
     <TypeScriptCompile Include="app\commands\say.ts" />
     <TypeScriptCompile Include="app\commands\ping.ts" />

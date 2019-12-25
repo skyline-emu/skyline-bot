@@ -1,8 +1,8 @@
-import { Command, CommandError, AccessLevel }                                             from "./command"
-import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions } from "discord.js";
-import config                                                                             from "../config.json"
+import { Command, CommandError, AccessLevel }                                                         from "./command";
+import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions, Attachment } from "discord.js";
+import config                                                                                         from "../config.json";
 
-export class MoveWebhook extends Command
+export class Move extends Command
 {
     constructor()
     {
@@ -43,22 +43,21 @@ export class MoveWebhook extends Command
 
         for (const message of messages)
         {
-            let options: WebhookMessageOptions = {};
+            let attachments: Attachment[] = [];
 
-            if (args[3] == "true")
-                options.username = `${message.author.username}#${message.author.discriminator}`;
-            else
-                options.username = message.author.username;
+            for (let messageAttachment of message.attachments.values())
+            {
+                // add attatchments
+            }
 
-            options.avatarURL = message.author.avatarURL;
+            let options: WebhookMessageOptions =
+            {
+                username: `${message.author.username}#${message.author.discriminator}`,
+                avatarURL: message.author.avatarURL,
+                files:     attachments
+            };
 
-            let content = message.content;
-
-            for (const attachment of message.attachments.values())
-                content += `\n${attachment.url}`;
-
-            if (content)
-                await webhook.send(content, options);
+            await webhook.send(message.content, options);
         }
 
         await msg.channel.bulkDelete(messages);
