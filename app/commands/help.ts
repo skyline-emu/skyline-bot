@@ -8,7 +8,7 @@ export class Help extends Command
 {
     constructor()
     {
-        super("help", AccessLevel.User, "send help to the user", "h");
+        super("help", AccessLevel.User, "Send help to the user", "h");
     }
 
     async run(msg: Message): Promise<void>
@@ -16,7 +16,7 @@ export class Help extends Command
         let embed = new RichEmbed({ "title": "**Bot Commands**" });
 
         for (const command of commandVec)
-            embed.addField(`\`${command.name}\` or \`${command.shortname}\``, command.desc, true);
+            embed.addField(`\`${command.name}\` or \`${command.shortname ? command.shortname : ""}\``, command.desc, true);
         if (!msg.author.dmChannel)
             msg.author.createDM().then((channel) => { channel.send(embed) });
         else
