@@ -5,11 +5,11 @@ export class Bot extends Filter
 {
 	constructor()
 	{
-		super("bot", Number.NEGATIVE_INFINITY);
+		super("bot", 0);
 	}
 
 	async run(message: Message): Promise<boolean>
 	{
-		return message.author.bot
+		return !message.author.bot
 	}
 }

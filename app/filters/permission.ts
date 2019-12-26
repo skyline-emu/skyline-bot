@@ -10,15 +10,15 @@ let accessMap = new Map<AccessLevel, Snowflake>
 
 let userWhitelist: Snowflake[] =
 [
-	"230356924284010508", //Xpl0itR
-	"180662388301889536" //Mark
+	"230356924284010508", // Xpl0itR
+	"180662388301889536" // Mark
 ];
 
 export class Permission extends Filter
 {
 	constructor()
 	{
-		super("permission", Number.POSITIVE_INFINITY);
+		super("permission", 15);
 	}
 
 	async run(message: Message, command: Command): Promise<boolean>

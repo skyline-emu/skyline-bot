@@ -7,7 +7,7 @@ export class CommandCheck extends Filter
 {
 	constructor()
 	{
-		super("commandCheck", Number.MAX_VALUE);
+		super("commandCheck", 10);
 	}
 
 	async run(message: Message, command: Command): Promise<boolean>

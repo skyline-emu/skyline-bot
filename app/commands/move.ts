@@ -10,6 +10,7 @@ export class Move extends Command
     {
         super("move", "m", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks `(m {Amount} {Channel})`");
     }
+    
     async run(msg: Message, args: string[]): Promise<void>
     {
         if (args.length < 3)
