@@ -13,14 +13,14 @@ export abstract class Command
     name:      string;
     access:    AccessLevel;
     desc:      string;
-    shortname: string;
+    shortname: string | null;
 
-    constructor(name: string, access: AccessLevel, desc: string, shortname?: string)
+    constructor(name: string, shortname: string | null, access: AccessLevel, desc: string)
     {
         this.name      = name
+        this.shortname = shortname
         this.access    = access
         this.desc      = desc
-        this.shortname = shortname!
     }
 
     async abstract run(msg: Message, args: string[]): Promise<void>;

@@ -1,12 +1,14 @@
 import { Command, CommandError, AccessLevel }                                                         from "./command";
 import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions, Attachment } from "discord.js";
 import config                                                                                         from "../config.json";
+import https                                                                                          from "https";
+import { IncomingMessage }                                                                            from "http";
 
 export class Move extends Command
 {
     constructor()
     {
-        super("move", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks `(mw {Amount} {Channel})`", "mwh");
+        super("move", "m", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks `(m {Amount} {Channel})`");
     }
     async run(msg: Message, args: string[]): Promise<void>
     {
@@ -47,7 +49,12 @@ export class Move extends Command
 
             for (let messageAttachment of message.attachments.values())
             {
-                // add attatchments
+                let content : IncomingMessage = await new Promise(async (resolve, reject) => {
+                    (await https.get(messageAttachment.url)).on("response", (response: IncomingMessage) => {
+                        response ? resolve(response) : reject()
+                    })
+                })
+                attachments.push(new Attachment(content, messageAttachment.filename));
             }
 
             let options: WebhookMessageOptions =

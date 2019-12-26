@@ -4,7 +4,7 @@ import { Message, RichEmbed, Snowflake, TextChannel, Permissions, GuildChannel }
 
 export class MoveEmbed extends Command {
     constructor() {
-        super("moveemb", AccessLevel.Admin, "Moves the specified amount of messages to another channel using embeds `(me {Amount} {Channel})`", "meb");
+        super("moveemb", "me", AccessLevel.Admin, "Moves the specified amount of messages to another channel using embeds `(me {Amount} {Channel})`");
     }
     async run(msg: Message, args: string[]): Promise<void> {
         if (args.length < 3)

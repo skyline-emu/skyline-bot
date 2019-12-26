@@ -5,7 +5,7 @@ export class Log extends Filter
 {
 	constructor()
 	{
-		super("log", Number.NEGATIVE_INFINITY);
+		super("log", Number.NEGATIVE_INFINITY + 1);
 	}
 
 	async run(message: Message): Promise<boolean>

@@ -31,7 +31,8 @@ Object.values(commands).forEach((commandT) =>
     let command: Command = new commandT();
 
     commandMap.set(command.name,      command);
-    commandMap.set(command.shortname, command);
+    if(command.shortname)
+        commandMap.set(command.shortname, command);
     commandVec.push(command);
 });
 
