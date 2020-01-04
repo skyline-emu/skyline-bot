@@ -16,7 +16,7 @@ export class Ban extends Command
 
         if (usersToBan == null) throw new CommandError("You must mention a user(s)");
 
-        for (let i = 0; i == usersToBan.size; i++) args.shift();
+        for (let i = 0; i <= usersToBan.size+1; i++) args.shift();
         let reason = args.join(" ");
 
         usersToBan.forEach((userToBan: User) =>
