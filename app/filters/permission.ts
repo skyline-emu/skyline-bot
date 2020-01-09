@@ -1,6 +1,7 @@
-import { Filter } from "./filter"
+import { Filter }                          from "./filter"
 import { Message, GuildMember, Snowflake } from "discord.js";
-import { AccessLevel, Command } from "../commands/command.js";
+import { AccessLevel, Command }            from "../commands/command.js";
+import config                              from "../config.json";
 
 let accessMap = new Map<AccessLevel, Snowflake>
 ([
@@ -8,22 +9,16 @@ let accessMap = new Map<AccessLevel, Snowflake>
     [AccessLevel.Moderator, "546093540166336532"]
 ])
 
-let userWhitelist: Snowflake[] =
-[
-	"230356924284010508", // Xpl0itR
-	"180662388301889536" // Mark
-];
-
 export class Permission extends Filter
 {
 	constructor()
 	{
-		super("permission", 15);
+		super("permission", 15, true);
 	}
 
 	async run(message: Message, command: Command): Promise<boolean>
 	{
-		if (userWhitelist.includes(message.author.id)) return true;
+		if (config.userWhitelist.includes(message.author.id)) return true;
 
 		let member: GuildMember = await message.guild.fetchMember(message.author);
 

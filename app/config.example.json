@@ -1,5 +1,6 @@
 {
-    "token": "FillThisIn",
-    "prefix": ".",
-    "deleteTime": 10000
+  "token": "FillThisIn",
+  "prefix": ".",
+  "deleteTime": 10000,
+  "userWhitelist": []
 }

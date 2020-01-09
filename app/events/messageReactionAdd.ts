@@ -6,7 +6,7 @@ export class MessageReactionAdd extends EventMethod
 {
 	constructor()
 	{
-		super("messageReactionAdd");
+		super("messageReactionAdd", true);
 	}
 
 	async run(client: Client, reaction: MessageReaction, user: User): Promise<void>

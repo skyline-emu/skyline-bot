@@ -5,11 +5,13 @@ export abstract class Filter
 {
     name:     string;
     priority: number;
+    enabled:  boolean;
 
-    constructor(name: string, priority: number)
+    constructor(name: string, priority: number, enabled: boolean)
     {
         this.name     = name;
         this.priority = priority;
+        this.enabled  = enabled;
     }
 
     async abstract run(msg: Message, command?: Command): Promise<boolean>;

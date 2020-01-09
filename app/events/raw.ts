@@ -11,7 +11,7 @@ export class RawEvent extends EventMethod
 {
 	constructor()
 	{
-		super("raw");
+		super("raw", true);
 	}
 
 	async run(client: any, rawEvent: any): Promise<void>

@@ -8,7 +8,7 @@ export class Help extends Command
 {
     constructor()
     {
-        super("help", "h", AccessLevel.User, "Send help to the user");
+        super("help", "h", AccessLevel.User, "Send help to the user", true);
     }
 
     async run(msg: Message): Promise<void>

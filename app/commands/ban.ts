@@ -5,7 +5,7 @@ export class Ban extends Command
 {
     constructor()
     {
-        super("execute", null, AccessLevel.Moderator, "Executes the mentioned user for their crimes");
+        super("execute", null, AccessLevel.Moderator, "Executes the mentioned user for their crimes", true);
     }
 
     async run(msg: Message, args: string[]): Promise<void>

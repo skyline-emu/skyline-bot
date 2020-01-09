@@ -4,9 +4,10 @@ import { Message, RichEmbed, Snowflake, TextChannel, Permissions, GuildChannel }
 
 export class MoveEmbed extends Command {
     constructor() {
-        super("moveemb", "me", AccessLevel.Admin, "Moves the specified amount of messages to another channel using embeds `(me {Amount} {Channel})`");
+        super("moveemb", "me", AccessLevel.Admin, "Moves the specified amount of messages to another channel using embeds `(me {Amount} {Channel})`", true);
     }
-    async run(msg: Message, args: string[]): Promise<void> {
+    async run(msg: Message, args: string[]): Promise<void>
+    {
         if (args.length < 3)
             throw new CommandError("Too few arguments were specified")
         let numMsg = parseInt(args[1])

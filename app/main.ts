@@ -20,25 +20,34 @@ Object.values(events).forEach((eventT) =>
 {
     let event: EventMethod = new eventT();
 
-    client.on(event.name, (...args: any) =>
+    if (event.enabled)
     {
-        event.run(client, ...args);
-    });
+        client.on(event.name, (...args: any) =>
+        {
+            event.run(client, ...args);
+        });
+    }
 });
 
 Object.values(commands).forEach((commandT) =>
 {
     let command: Command = new commandT();
 
-    commandMap.set(command.name,      command);
+    commandMap.set(command.name, command);
+
     if(command.shortname)
         commandMap.set(command.shortname, command);
+
     commandVec.push(command);
 });
 
 Object.values(filters).forEach((filterT) =>
 {
-    filterVec.push(new filterT());
+    let filter: Filter = new filterT();
+
+    if (filter.enabled) {
+        filterVec.push(filter);
+    }
 });
 filterVec.sort(function (a, b) { return a.priority - b.priority });
 

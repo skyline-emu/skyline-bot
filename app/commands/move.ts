@@ -8,7 +8,7 @@ export class Move extends Command
 {
     constructor()
     {
-        super("move", "m", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks `(m {Amount} {Channel})`");
+        super("move", "m", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks `(m {Amount} {Channel})`", true);
     }
     
     async run(msg: Message, args: string[]): Promise<void>

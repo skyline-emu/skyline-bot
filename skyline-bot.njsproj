@@ -52,11 +52,12 @@
     <TypeScriptCompile Include="app\commands\ban.ts" />
     <TypeScriptCompile Include="app\commands\say.ts" />
     <TypeScriptCompile Include="app\commands\ping.ts" />
-    <TypeScriptCompile Include="app\commands\release.ts" />
+    <TypeScriptCompile Include="app\commands\skylineRelease.ts" />
     <TypeScriptCompile Include="app\events\event.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="app\events\index.ts" />
+    <TypeScriptCompile Include="app\events\guildMemberAdd.ts" />
     <TypeScriptCompile Include="app\events\messageReactionRemove.ts" />
     <TypeScriptCompile Include="app\events\messageReactionAdd.ts">
       <SubType>Code</SubType>
@@ -71,6 +72,7 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="app\filters\index.ts" />
     <TypeScriptCompile Include="app\filters\commandCheck.ts" />
+    <TypeScriptCompile Include="app\filters\enabled.ts" />
     <TypeScriptCompile Include="app\filters\permission.ts" />
     <TypeScriptCompile Include="app\filters\log.ts" />
     <TypeScriptCompile Include="app\main.ts" />

@@ -5,7 +5,7 @@ export class Log extends Filter
 {
 	constructor()
 	{
-		super("log", 5);
+		super("log", 5, true);
 	}
 
 	async run(message: Message): Promise<boolean>

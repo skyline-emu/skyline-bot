@@ -5,7 +5,7 @@ export class Ready extends EventMethod
 {
 	constructor()
 	{
-		super("ready");
+		super("ready", true);
 	}
 
 	async run(client: any): Promise<void>

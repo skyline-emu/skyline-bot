@@ -9,7 +9,7 @@ export class MesssageEvent extends EventMethod
 {
 	constructor()
 	{
-        super("message");
+        super("message", true);
 	}
 
 	async run(client: any, msg: Message): Promise<void>
