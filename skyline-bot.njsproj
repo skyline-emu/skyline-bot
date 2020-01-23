@@ -50,6 +50,9 @@
     <TypeScriptCompile Include="app\commands\moveembed.ts" />
     <TypeScriptCompile Include="app\commands\move.ts" />
     <TypeScriptCompile Include="app\commands\ban.ts" />
+    <TypeScriptCompile Include="app\commands\purge.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="app\commands\say.ts" />
     <TypeScriptCompile Include="app\commands\ping.ts" />
     <TypeScriptCompile Include="app\commands\skylineRelease.ts" />
