@@ -1,5 +1,5 @@
 import { EventMethod           } from "./event";
-import { CommandError          } from "../commands/command.js";
+import { Command, CommandError } from "../commands/command.js";
 import { Message, RichEmbed    } from "discord.js";
 import { commandMap, filterVec } from "../main.js";
 import { Filter                } from "../filters/filter";
@@ -12,11 +12,10 @@ export class MesssageEvent extends EventMethod
         super("message", true);
 	}
 
-	async run(client: any, msg: Message): Promise<void>
+    async run(client: any, msg: Message): Promise<void>
 	{
-        let args        = msg.content.split(" ");
-        let cmd: string = args[0].substr(config.prefix.length);
-        const command   = commandMap.get(cmd);
+        let args: Array<string> = msg.content.split(" ");
+        let command: Command | undefined = commandMap.get(args[0].substr(config.prefix.length));
 
         for (let index = 0; index < filterVec.length; index++)
         {
@@ -26,23 +25,23 @@ export class MesssageEvent extends EventMethod
             if (result == false) return;
         }
 
-        await command!.run(msg, args).catch((e) =>
-        {
+        command!.run(msg, args).catch(async (error) => {
             let embed = new RichEmbed({ "title": "**An Error was Encountered**" });
+            embed.setColor("RED");
 
-            if (e instanceof CommandError)
-                embed.setDescription(e.message);
-            if (e instanceof Error)
-                console.warn(e);
+            if (error instanceof CommandError)
+                embed.setDescription(error.message);
+
+            if (error instanceof Error)
+                console.error(error);
+
             else
-                console.warn(`Caught Error: ${e}`);
+                console.error(`Caught Error: ${error}`);
 
-            msg.channel.send(embed).then(() =>
-            {
+            await msg.channel.send(embed);
+
+            if (config.deleteTime > 0)
                 msg.delete(config.deleteTime);
-            });
         });
-
-        msg.delete(config.deleteTime);
 	}
 }

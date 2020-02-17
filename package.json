@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "start": "tsc && node build/main.js",
+    "start": "tsc && node app/main.js",
     "tsc": "tsc",
     "tscw": "tsc-watch --onSuccess \"node ./build/main.js\"",
     "fmt": "prettier --write \"**/*.ts\""

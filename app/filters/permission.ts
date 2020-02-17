@@ -1,12 +1,13 @@
 import { Filter }                          from "./filter"
 import { Message, GuildMember, Snowflake } from "discord.js";
 import { AccessLevel, Command }            from "../commands/command.js";
-import config                              from "../config.json";
+import configJson                          from "../config.json";
+const config: any = configJson;
 
 let accessMap = new Map<AccessLevel, Snowflake>
 ([
-    [AccessLevel.Admin,     "545842302409768968"],
-    [AccessLevel.Moderator, "546093540166336532"]
+	[AccessLevel.Admin,     config.adminRole],
+	[AccessLevel.Moderator, config.modRole]
 ])
 
 export class Permission extends Filter

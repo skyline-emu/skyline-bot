@@ -30,7 +30,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="app\roleArray.json" />
     <Content Include="app\config.example.json" />
     <Content Include="app\config.json" />
     <Content Include="package.json" />

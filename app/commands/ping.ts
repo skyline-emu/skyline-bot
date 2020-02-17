@@ -1,5 +1,4 @@
-import { Command, AccessLevel } from "./command"
-import config                   from "../config.json"
+import { Command, AccessLevel, config } from "./command"
 import { Message, RichEmbed }   from "discord.js";
 
 export class Ping extends Command {

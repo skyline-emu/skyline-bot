@@ -1,6 +1,10 @@
 {
-  "token": "FillThisIn",
-  "prefix": ".",
-  "deleteTime": 10000,
-  "userWhitelist": []
+  "token": "",
+  "prefix": "?",
+  "deleteTime": 0,
+  "dmResponses": true,
+  "adminRole": "",
+  "modRole": "",
+  "userWhitelist": [],
+  "roleAssignment": []
 }

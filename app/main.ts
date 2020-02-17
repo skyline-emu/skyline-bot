@@ -1,54 +1,39 @@
 import { Client      } from "discord.js";
-import config          from "./config.json";
+import { EventMethod } from "./events/event";
+import { Command     } from "./commands/command";
+import { Filter      } from "./filters/filter";
 import * as events     from "./events";
 import * as commands   from "./commands";
 import * as filters    from "./filters";
-import { EventMethod } from "./events/event.js";
-import { Command     } from "./commands/command.js";
-import { Filter      } from "./filters/filter.js";
+import config          from "./config.json";
 
-const client   = new Client();
-let commandMap = new Map<string, Command>();
-let commandVec = new Array<Command>();
-let filterVec  = new Array<Filter>();
+const client          = new Client();
+export let commandMap = new Map<string, Command>();
+export let filterVec  = new Array<Filter>();
 
-export { commandMap };
-export { commandVec };
-export { filterVec  };
-
-Object.values(events).forEach((eventT) =>
-{
+for (let eventT of Object.values(events)) {
     let event: EventMethod = new eventT();
 
-    if (event.enabled)
-    {
-        client.on(event.name, (...args: any) =>
-        {
+    if (event.enabled) {
+        client.on(event.name, (...args: any) => {
             event.run(client, ...args);
         });
     }
-});
+}
 
-Object.values(commands).forEach((commandT) =>
-{
+for (let commandT of Object.values(commands)) {
     let command: Command = new commandT();
 
     commandMap.set(command.name, command);
+}
 
-    if(command.shortname)
-        commandMap.set(command.shortname, command);
-
-    commandVec.push(command);
-});
-
-Object.values(filters).forEach((filterT) =>
-{
+for (let filterT of Object.values(filters)) {
     let filter: Filter = new filterT();
 
     if (filter.enabled) {
         filterVec.push(filter);
     }
-});
+}
 filterVec.sort(function (a, b) { return a.priority - b.priority });
 
 client.login(config.token);

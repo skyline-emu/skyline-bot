@@ -1,5 +1,4 @@
-import { Command, CommandError, AccessLevel } from "./command"
-import config from "../config.json"
+import { Command, CommandError, AccessLevel, config } from "./command"
 import { Message, RichEmbed, Snowflake, TextChannel, Permissions, GuildChannel } from "discord.js";
 
 export class MoveEmbed extends Command {

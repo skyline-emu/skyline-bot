@@ -1,4 +1,7 @@
 import { Message } from "discord.js";
+import config      from "../config.json";
+
+export { config };
 
 export enum AccessLevel
 {

@@ -1,11 +1,11 @@
-import { Filter } from "./filter"
+import { Filter  } from "./filter"
 import { Message } from "discord.js";
 
 export class Log extends Filter
 {
 	constructor()
 	{
-		super("log", 5, true);
+		super("log", 5, false);
 	}
 
 	async run(message: Message): Promise<boolean>

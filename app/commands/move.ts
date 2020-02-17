@@ -1,6 +1,5 @@
-import { Command, CommandError, AccessLevel }                                                         from "./command";
+import { Command, CommandError, AccessLevel, config }                                                 from "./command";
 import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions, Attachment } from "discord.js";
-import config                                                                                         from "../config.json";
 import https                                                                                          from "https";
 import { IncomingMessage }                                                                            from "http";
 

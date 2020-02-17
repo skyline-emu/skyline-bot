@@ -1,6 +1,7 @@
 import { EventMethod } from "./event";
 import { Client, MessageReaction, User, GuildMember } from "discord.js";
-import array from "../roleArray.json";
+import configJson from "../config.json";
+const config: any = configJson;
 
 export class MessageReactionAdd extends EventMethod
 {
@@ -11,7 +12,7 @@ export class MessageReactionAdd extends EventMethod
 
 	async run(client: Client, reaction: MessageReaction, user: User): Promise<void>
 	{
-		array.forEach(async (item) =>
+		config.roleAssignment.forEach(async (item: any) =>
 		{
 			if (reaction.message.id == item.messageId && reaction.emoji.id == item.emojiId)
 			{

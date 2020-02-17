@@ -1,8 +1,7 @@
-import { RichEmbed }            from "discord.js";
-import { AccessLevel, Command } from "./command"
-import { Message }              from "discord.js";
-import { commandVec }           from "../main.js";
-import config                   from "../config.json";
+import { RichEmbed }                    from "discord.js";
+import { AccessLevel, Command, config } from "./command"
+import { Message }                      from "discord.js";
+import { commandMap }                   from "../main";
 
 export class Help extends Command
 {
@@ -14,18 +13,19 @@ export class Help extends Command
     async run(msg: Message): Promise<void>
     {
         let embed = new RichEmbed({ "title": "**Bot Commands**" });
+        embed.setColor("GREEN");
 
-        for (const command of commandVec) {
-            if(command.shortname)
-                embed.addField(`\`${command.name}\` or \`${command.shortname}\``, command.desc, true);
-            else
-                embed.addField(`\`${command.name}\``, command.desc, true);
+        for (const command of commandMap) {
+            embed.addField(`\`${command[1].name}\``, command[1].desc, true);
         }
+
         if (!msg.author.dmChannel)
             msg.author.createDM().then((channel) => { channel.send(embed) });
-        else
-            msg.author.dmChannel.send(embed);
 
-        msg.delete(config.deleteTime);
+        else
+            msg.author.send(embed);
+
+        if (config.deleteTime > 0)
+            msg.delete(config.deleteTime);
     }
 }

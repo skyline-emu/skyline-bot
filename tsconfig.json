@@ -3,12 +3,12 @@
     "incremental": true,
     "target": "es2019",
     "module": "commonjs",
-    "outDir": "build",
-    "rootDir": "app", 
+    "rootDir": "app",
     "removeComments": true,
     "resolveJsonModule": true,
     "strict": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true
   }
 }
