@@ -1,0 +1,23 @@
+{
+    "env": {
+        "node": true,
+        "es2020": true
+    },
+    "extends": [],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "indent": ["error", 4],
+        "semi": ["error", "always"],
+        "comma-dangle": ["error", "only-multiline"],
+        "no-unused-vars": ["off"],
+        "eqeqeq": ["off"],
+        "quotes": ["warn", "double"]
+    }
+}

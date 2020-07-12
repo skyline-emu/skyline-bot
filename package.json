@@ -6,21 +6,20 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "start": "tsc && node app/main.js",
+    "start": "tsc && node build/main.js",
     "tsc": "tsc",
-    "tscw": "tsc-watch --onSuccess \"node ./build/main.js\"",
-    "fmt": "prettier --write \"**/*.ts\""
+    "tscw": "tsc-watch --onSuccess \"node ./build/main.js\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PixelyIon/skyline-bot.git"
+    "url": "git+https://github.com/skyline-emu/skyline-bot.git"
   },
-  "author": "https://github.com/PixelyIon/skyline-bot/contributors",
+  "author": "https://github.com/skyline-emu/skyline-bot/contributors",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/PixelyIon/skyline-bot/issues"
+    "url": "https://github.com/skyline-emu/skyline-bot/issues"
   },
-  "homepage": "https://github.com/PixelyIon/skyline-bot#readme",
+  "homepage": "https://github.com/skyline-emu/skyline-bot#readme",
   "dependencies": {
     "@types/node-fetch": "^2.5.4",
     "discord.js": "^11.5.1",
@@ -29,7 +28,13 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.14",
+    "@typescript-eslint/eslint-plugin": "^3.6.0",
+    "@typescript-eslint/parser": "^3.6.0",
+    "eslint": "^7.4.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
     "tsc-watch": "^4.0.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.9.6"
   }
 }
