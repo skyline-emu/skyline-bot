@@ -1,5 +1,6 @@
 import { DiscordEvent } from "./event";
 import config from "../config.json";
+import { Client } from "discord.js";
 
 /** This event is used to do some setup after the bot has established a connection with the Discord API */
 export class Ready extends DiscordEvent {
@@ -7,11 +8,12 @@ export class Ready extends DiscordEvent {
         super("ready");
     }
 
-    async run(client: any): Promise<void> {
-        console.log(`Logged in as ${client.user.username}#${client.user.discriminator}!`);
+    async run(client: Client): Promise<void> {
+        let user = client.user!!;
+        console.log(`Logged in as ${user.username}#${user.discriminator}!`);
 
-        client.user.setPresence({
-            game: { type: "WATCHING", name: `you! | ${config.prefix}help` },
+        await user.setPresence({
+            activity: { type: "WATCHING", name: `you! | ${config.prefix}help` },
             status: "online"
         });
     }

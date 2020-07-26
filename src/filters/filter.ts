@@ -12,7 +12,8 @@ export abstract class Filter {
 
     /** 
      * This function is called when this filter's turn comes in the filter stack
+     * @param message The message that has to be processed by the filter
      * @returns A boolean stating if this filter has "consumed" this message or not
      */
-    abstract async run(msg: Message): Promise<boolean>;
+    abstract async run(message: Message): Promise<boolean>;
 }

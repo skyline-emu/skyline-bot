@@ -1,4 +1,4 @@
-import { Client } from "discord.js";
+import { Client, ClientEvents } from "discord.js";
 import { DiscordEvent } from "./events/event";
 import { Command } from "./commands/command";
 import { Filter } from "./filters/filter";
@@ -15,13 +15,13 @@ export let commandArray = new Array<Command>();
 export let filterArray = new Array<Filter>();
 
 /** The Discord.JS Client that is used for all communication with the Discord API */
-const client = new Client();
+const client = new Client({ partials: ['MESSAGE', 'REACTION'] });
 
 // We start by setting up all events
 for (const EventT of Object.values(events)) {
     const event: DiscordEvent = new EventT();
 
-    client.on(event.type, (...args: any) => {
+    client.on(event.type as keyof ClientEvents, (...args: any) => {
         event.run(client, ...args);
     });
 }
@@ -42,7 +42,8 @@ for (const CommandT of Object.values(commands)) {
 
     commandArray.push(command);
     commandMap.set(command.name, command);
-    if (command.shortname) commandMap.set(command.shortname, command);
+    if (command.shortName)
+        commandMap.set(command.shortName, command);
 }
 
 client.login(config.token);

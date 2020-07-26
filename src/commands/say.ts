@@ -3,7 +3,7 @@ import { Message, Snowflake } from "discord.js";
 
 export class Say extends Command {
     constructor() {
-        super("say", "s", AccessLevel.Moderator, "Repeats what you say\n`say {Message}`", true);
+        super("say", "s", "Sends a message from the bot\n`say ({User}/{Channel} - Optional) {Message}`", AccessLevel.Moderator);
     }
 
     async run(message: Message, content: string[]): Promise<void> {
@@ -16,12 +16,12 @@ export class Say extends Command {
 
         if (content[0].startsWith("<#")) {
             let channelId: Snowflake = content[0].substring(2, content[0].length - 1);
-            channel = message.client.channels.get(channelId);
+            channel = message.client.channels.fetch(channelId);
 
             content.shift();
         } else if (content[0].startsWith("<@!")) {
             let userId: Snowflake = content[0].substring(3, content[0].length - 1);
-            channel = await message.client.fetchUser(userId);
+            channel = await message.client.users.fetch(userId);
 
             content.shift();
         } else {

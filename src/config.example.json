@@ -1,10 +1,10 @@
 {
   "token": "",
   "prefix": "?",
-  "deleteTime": 0,
+  "deleteTime": 10000,
   "dmResponses": true,
   "adminRole": "",
-  "modRole": "",
+  "moderatorRole": "",
   "userWhitelist": [],
   "roleAssignment": []
 }

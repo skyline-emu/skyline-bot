@@ -1,4 +1,4 @@
-import { Message, RichEmbed, Snowflake, TextChannel, Permissions, WebhookMessageOptions, Attachment } from "discord.js";
+import { Message, MessageEmbed, ChannelLogsQueryOptions, WebhookMessageOptions, MessageAttachment } from "discord.js";
 import https from "https";
 import { IncomingMessage } from "http";
 import { Command, CommandError, AccessLevel } from "./command";
@@ -7,68 +7,107 @@ import config from "../config.json";
 /** This command is used to move a specified amount of messages from one channel to another using webhooks */
 export class Move extends Command {
     constructor() {
-        super("move", "m", AccessLevel.Admin, "Moves the specified amount of messages to another channel using Webhooks\n`(m {Amount} {Channel})`", true);
+        super("move", "m", "Moves the specified amount of messages to another channel using Webhooks\n`m {Channel} ({Amount}/{Last Message ID}) {First Message ID}`", AccessLevel.Moderator);
     }
 
-    async run(msg: Message, args: string[]): Promise<void> {
-        if (args.length < 3)
+    async run(message: Message, args: string[]): Promise<void> {
+        if (args.length < 2)
             throw new CommandError("Too few arguments were specified");
 
-        let numMsg = parseInt(args[1]);
-        if (!numMsg)
-            throw new CommandError("Invalid amount of messages specified");
+        let messages = new Array<Message>();
+        if (args.length == 2) {
+            let messageAmount = parseInt(args[1]);
+            if (!messageAmount)
+                throw new CommandError("Invalid amount of messages specified");
 
-        let channelId: Snowflake;
-        if (args[2].startsWith("<#"))
-            channelId = args[2].substring(2, args[2].length - 1);
-        else
-            channelId = args[2];
-
-        let channel = msg.client.channels.get(channelId);
-        if (!channel)
-            throw new CommandError("Invalid channel specified");
-        else if (!(channel instanceof TextChannel))
-            throw new CommandError(`Invalid channel type: ${channel.type}`);
-
-        const channelPermissions: Permissions = channel.memberPermissions(msg.client.user)!!;
-        if (!channelPermissions.has("MANAGE_WEBHOOKS"))
-            throw new CommandError(`Insufficient permissions to manage webhooks in channel: <#${channel.id}>`);
-
-        let webhook = await channel.createWebhook("SkylineMove", "");
-
-        const messages = (await msg.channel.fetchMessages({ limit: numMsg, before: msg.id })).array().reverse();
-        for (const message of messages) {
-            let attachments = Array<Attachment>();
-
-            for (let messageAttachment of message.attachments.values()) {
-                let content: IncomingMessage = await new Promise(
-                    async (resolve, reject) => {
-                        (await https.get(messageAttachment.url)).on(
-                            "response",
-                            (response: IncomingMessage) => {
-                                response ? resolve(response) : reject();
-                            }
-                        );
-                    }
-                );
-                
-                attachments.push(new Attachment(content, messageAttachment.filename));
+            while (messageAmount) {
+                let amount = Math.min(messageAmount, 100);
+                Array.prototype.push.apply(messages, (await message.channel.messages.fetch({ limit: amount, before: messages.length ? messages[messages.length - 1].id : message.id }, false)).array());
+                messageAmount -= amount;
             }
 
-            let options: WebhookMessageOptions = {
-                username: `${message.author.username}#${message.author.discriminator}`,
-                avatarURL: message.author.avatarURL,
-                files: attachments
+            messages.reverse();
+        } else {
+            let lastMessage = await message.channel.messages.fetch(args[1], false), firstMessage = await message.channel.messages.fetch(args[2], false);
+
+            if (firstMessage.createdTimestamp >= lastMessage.createdTimestamp)
+                throw new CommandError("Last message was sent before the first message");
+            if (firstMessage.channel.id != lastMessage.channel.id)
+                throw new CommandError("Messages weren't sent in the same channel");
+
+            messages.push(firstMessage);
+            
+            while (true) {
+                let subset = await message.channel.messages.fetch({ limit: 100, after: messages[messages.length - 1].id }, false);
+                if (subset.has(lastMessage.id)) {
+                    let flag = false;
+                    subset.forEach((value, key) => {
+                        if (key == lastMessage.id)
+                            flag = true;
+                        if (flag)
+                            messages.push(value);
+                    });
+                    break;
+                } else {
+                    Array.prototype.push.apply(messages, subset.array().reverse());
+                }
+            }
+        }
+
+        if (messages.length > 1000) {
+            const confirmMessage = await message.channel.send(new MessageEmbed({ title: `Moving ${messages.length} messages, confirm ?` }));
+            await confirmMessage.react("👍");
+            await confirmMessage.react("👎");
+            try {
+                let reaction = (await confirmMessage.awaitReactions((reaction, user) => { return ["👍", "👎"].includes(reaction.emoji.name) && user.id == message.author.id; }, { max: 1, time: 60000, errors: ["time"] })).first()!!;
+                if (reaction.emoji.name == "👎")
+                    return;
+            } catch (e) {
+                return;
+            } finally {
+                await confirmMessage.delete();
+            }
+        }
+
+        let channel = message.mentions.channels.first();
+        if (!channel)
+            throw new CommandError("Invalid channel specified");
+
+        let webhook = (await channel.fetchWebhooks()).find((value) => value.name == "SkylineMove") ?? await channel.createWebhook("SkylineMove");
+
+        for (const message of messages) {
+            let MessageAttachments = Array<MessageAttachment>();
+
+            for (let messageMessageAttachment of message.attachments.values()) {
+                let content: IncomingMessage = await new Promise(async (resolve, reject) => {
+                    (await https.get(messageMessageAttachment.url)).on("response", (response: IncomingMessage) => {
+                        response ? resolve(response) : reject();
+                    });
+                });
+
+                MessageAttachments.push(new MessageAttachment(content, messageMessageAttachment.name));
+            }
+
+            let options: WebhookMessageOptions & { split?: false } = {
+                username: `${message.author.username}`,
+                avatarURL: message.author.avatarURL() ?? undefined,
+                files: MessageAttachments,
+                embeds: message.embeds,
+                disableMentions: "all",
             };
 
             await webhook.send(message.content, options);
         }
 
-        await msg.channel.bulkDelete(messages);
-        await webhook.delete();
+        let left = messages.length;
+        while (left) {
+            let index = messages.length - left, amount = Math.min(left, 100);
+            message.channel.bulkDelete(messages.slice(index, index + amount), true);
+            left -= amount;
+        }
 
-        const message = await msg.channel.send(new RichEmbed({ title: "Success" }));
-        if (message instanceof Message)
-            message.delete(config.deleteTime);
+        const resultMessage = await message.channel.send(new MessageEmbed({ title: "Success" }));
+        if (resultMessage instanceof Message)
+            resultMessage.delete({ timeout: config.deleteTime });
     }
 }
