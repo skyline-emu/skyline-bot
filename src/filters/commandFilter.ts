@@ -22,7 +22,7 @@ export class CommandFilter extends Filter {
 
         if (command == undefined) return false;
 
-        if (!((config.userWhitelist as string[]).includes(message.author.id)) || !(await userHasAccess(message.author, message.guild!!, command.access)))
+        if (!(((config.userWhitelist as string[]).includes(message.author.id)) || (await userHasAccess(message.author, message.guild!!, command.access))))
             return false;
 
         command!.run(message, Object.create(args)).catch(async error => {
@@ -50,8 +50,8 @@ export class CommandFilter extends Filter {
                 console.error(`Caught Error: ${error}`);
 
             await message.channel.send(embed);
-
-            if (config.deleteTime > 0)
+        }).finally(async () => {
+            if (config.deleteTime > 0 && !message.deleted)
                 message.delete({ timeout: config.deleteTime });
         });
 
