@@ -24,7 +24,7 @@
     "@types/node-fetch": "^2.5.4",
     "@types/ws": "^7.2.6",
     "discord.js": "^12",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "tsc": "^1.20150623.0"
   },
   "devDependencies": {
