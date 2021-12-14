@@ -103,8 +103,10 @@ dist
 # TernJS port file
 .tern-port
 
-# Config JSON
+# Bot Config JSONs
 config.json
+roleArray.json
+filterArray.json
 
 # Build Folder
 build/
