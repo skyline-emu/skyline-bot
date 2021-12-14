@@ -10,5 +10,5 @@ export abstract class DiscordEvent {
     }
 
     /** This function is called when any event of `type` is recieved from the Discord API */
-    abstract async run(client: Client, ...args: any): Promise<void>;
+    abstract run(client: Client, ...args: any): Promise<void>;
 }

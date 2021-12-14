@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-export function serializeMessage(message : Message) {
+export function serializeMessage(message: Message) {
     let contents = "";
 
     if (message.content.length)

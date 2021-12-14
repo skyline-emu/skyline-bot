@@ -15,7 +15,7 @@ export let commandArray = new Array<Command>();
 export let filterArray = new Array<Filter>();
 
 /** The Discord.JS Client that is used for all communication with the Discord API */
-const client = new Client({ partials: ['MESSAGE', 'REACTION'] });
+const client = new Client({ partials: ["MESSAGE", "REACTION"] });
 
 // We start by setting up all events
 for (const EventT of Object.values(events)) {

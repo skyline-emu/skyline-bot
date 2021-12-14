@@ -68,10 +68,10 @@ export abstract class Command {
      * @param message The message that triggered this command
      * @param args An array of space-seperated arguments derived from the message
      */
-    abstract async run(message: Message, args: string[]): Promise<void>;
+    abstract run(message: Message, args: string[]): Promise<void>;
 }
 
 /** This class is used for errors that arise during commands, they're the only error besides DiscordAPIError that is fully reported to a user */
 export class CommandError extends Error {
-    name = Object(CommandError).name
+    name = Object(CommandError).name;
 }

@@ -11,6 +11,9 @@ export class Move extends Command {
     }
 
     async run(message: Message, args: string[]): Promise<void> {
+        if (message.channel.type == "dm")
+            throw new CommandError("Moving from DM channels is not supported");
+
         if (args.length < 2)
             throw new CommandError("Too few arguments were specified");
 
@@ -36,7 +39,7 @@ export class Move extends Command {
                 throw new CommandError("Messages weren't sent in the same channel");
 
             messages.push(firstMessage);
-            
+
             while (true) {
                 let subset = await message.channel.messages.fetch({ limit: 100, after: messages[messages.length - 1].id }, false);
                 if (subset.has(lastMessage.id)) {
@@ -85,7 +88,7 @@ export class Move extends Command {
                     });
                 });
 
-                MessageAttachments.push(new MessageAttachment(content, messageMessageAttachment.name));
+                MessageAttachments.push(new MessageAttachment(content, messageMessageAttachment.name ?? undefined));
             }
 
             let options: WebhookMessageOptions & { split?: false } = {

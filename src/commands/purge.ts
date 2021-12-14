@@ -8,6 +8,9 @@ export class Purge extends Command {
     }
 
     async run(message: Message, content: string[]): Promise<void> {
+        if (message.channel.type == "dm")
+            throw new CommandError("Purging from DM channels is not supported");
+
         content.shift();
 
         let purgeAmount: number = Number.parseInt(content[0]) + 1; // Counting the message with the command itself

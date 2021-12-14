@@ -1,7 +1,8 @@
-import { Message, MessageEmbed } from "discord.js";
+import { TextChannel, DMChannel, NewsChannel, Message, MessageEmbed } from "discord.js";
 import { Command, CommandError, AccessLevel } from "./command";
 import config from "../config.json";
 import { serializeMessage } from "../common/serializeMessage";
+import { assert } from "console";
 
 /** This command is used to move a specified amount of messages from one channel to another channel or DMs using embeds */
 export class MoveEmbed extends Command {
@@ -10,6 +11,9 @@ export class MoveEmbed extends Command {
     }
 
     async run(message: Message, args: string[]): Promise<void> {
+        if (message.channel.type == "dm")
+            throw new CommandError("Moving from DM channels is not supported");
+
         if (args.length < 2)
             throw new CommandError("Too few arguments were specified");
 
@@ -53,7 +57,7 @@ export class MoveEmbed extends Command {
 
                 for (const message of messages.slice(index, index + amountEmbed))
                     embed.addField(message.author.username, serializeMessage(message).substr(0, 1024), false);
-                
+
                 await channel.send(embed);
                 embed = new MessageEmbed();
 

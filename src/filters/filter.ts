@@ -1,5 +1,4 @@
 import { Message } from "discord.js";
-import { Command } from "../commands/command";
 
 /** The abstract Filter class is used to provide a common API for all filters */
 export abstract class Filter {
@@ -15,5 +14,5 @@ export abstract class Filter {
      * @param message The message that has to be processed by the filter
      * @returns A boolean stating if this filter has "consumed" this message or not
      */
-    abstract async run(message: Message): Promise<boolean>;
+    abstract run(message: Message): Promise<boolean>;
 }
