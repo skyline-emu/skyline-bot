@@ -1,5 +1,5 @@
 import { MessageEmbed } from "discord.js";
-import { AccessLevel, Command, userHasAccess } from "./command";
+import { AccessLevel, Command, CommandError, userHasAccess } from "./command";
 import { Message } from "discord.js";
 import { commandArray } from "../main";
 import config from "../config.json";
@@ -7,10 +7,13 @@ import config from "../config.json";
 /** This command is used to provide a users with the summary of all commands that the bot has to offer */
 export class Help extends Command {
     constructor() {
-        super("help", "h", "Send help to the user\n`h`", AccessLevel.User);
+        super("help", "h", "Recieve this help embed in DMs\n`h`", AccessLevel.User);
     }
 
     async run(message: Message): Promise<void> {
+        if (message.channel.type == "dm")
+            throw new CommandError("Retrieving help from DMs is not supported");
+
         let embed = new MessageEmbed({ title: "**Skyline Bot Commands**" });
         embed.setColor("GREEN");
 
