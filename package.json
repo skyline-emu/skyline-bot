@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/skyline-emu/skyline-bot#readme",
   "dependencies": {
+    "@octokit/rest": "^18.12.0",
     "@types/node-fetch": "^2.5.4",
     "@types/ws": "^7.2.6",
     "discord.js": "^12",

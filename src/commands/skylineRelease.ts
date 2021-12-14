@@ -1,6 +1,8 @@
 import { Message, MessageEmbed } from "discord.js";
 import { Command, CommandError, AccessLevel } from "./command";
-import fetch from "node-fetch";
+import { Octokit } from "@octokit/rest";
+
+const octokit = new Octokit();
 
 /** This command is used to retrieve the most recent release from a specific branch of the Skyline repository */
 export class Release extends Command {
@@ -9,32 +11,80 @@ export class Release extends Command {
     }
 
     async run(message: Message, args: string[]): Promise<void> {
-        let commitUrl = new URL("https://api.github.com/repos/skyline-emu/skyline/commits");
-        if (args[1])
-            commitUrl.searchParams.set("sha", args[1]);
+        const branch = args[0] ?? "master";
+        const runs = (await octokit.actions.listWorkflowRunsForRepo({
+            owner: "skyline-emu",
+            repo: "skyline",
+            branch: branch,
+            status: "completed",
+        })).data;
 
-        const commits = await (await fetch(commitUrl)).json();
-        if ("message" in commits)
-            throw new CommandError(commits["message"]);
+        if (runs.total_count == 0)
+            throw new CommandError(`No GitHub Actions workflow found in '${branch}' branch`);
 
-        for (let index = 0; index < 2; index++) {
-            const suites = (await (await fetch(`https://api.github.com/repos/skyline-emu/skyline/commits/${commits[index]["sha"]}/check-suites`, { headers: { Accept: "application/vnd.github.antiope-preview+json" } })).json())["check_suites"];
-            for (const suite of suites) {
-                if (suite["status"] == "completed") {
-                    let embed = new MessageEmbed({ url: `https://github.com/skyline-emu/skyline/commit/${commits[index]["sha"]}/checks?check_suite_id=${suite["id"]}` });
+        let selectedRun = null;
+        let releaseArtifact = null;
+        let debugArtifact = null;
+        for (let run of runs.workflow_runs) {
+            if (run.name == "CI") {
+                const artifacts = (await octokit.rest.actions.listWorkflowRunArtifacts({
+                    owner: "skyline-emu",
+                    repo: "skyline",
+                    run_id: run.id,
+                })).data.artifacts;
 
-                    if (args[1])
-                        embed.setTitle(`Latest Release from ${args[1]}`);
-                    else
-                        embed.setTitle("Latest Release");
+                for (let artifact of artifacts) {
+                    if (artifact.name == "app-release.apk") {
+                        releaseArtifact = artifact;
+                        if (debugArtifact)
+                            break;
+                    } else if (artifact.name == "app-debug.apk") {
+                        debugArtifact = artifact;
+                        if (releaseArtifact)
+                            break;
+                    }
+                }
 
-                    await message.channel.send(embed);
-        
-                    return;
+                if (releaseArtifact != null && debugArtifact != null) {
+                    selectedRun = run;
+                    break;
+                } else {
+                    releaseArtifact = null;
+                    debugArtifact = null;
                 }
             }
         }
 
-        throw new CommandError("Cannot find successful build within last two commits");
+        if (selectedRun == null || debugArtifact == null || releaseArtifact == null)
+            throw new CommandError(`No CI GitHub Actions workflow found in '${branch}' branch`);
+
+        const commit = selectedRun.head_commit!;
+        var commitTitleIndex = commit.message.indexOf("\n");
+        let embed = new MessageEmbed({
+            "title": commitTitleIndex == -1 ? commit.message : commit.message.substring(0, commitTitleIndex),
+            "description": commitTitleIndex != -1 ? commit.message.substring(commitTitleIndex + 1) : undefined,
+            "url": selectedRun.html_url,
+            timestamp: Date.parse(selectedRun.run_started_at!),
+            "footer": {
+                "text": "A GitHub account is required to download APKs"
+            },
+            "author": {
+                // We use this as a psuedo-heading rather than as an actual authorship field
+                "name": `GitHub Actions Build on ${branch}`,
+                "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+            },
+            "fields": [
+                {
+                    "name": "Release Build (Recommended)",
+                    "value": `[Download APK](https://github.com/skyline-emu/skyline/suites/${selectedRun.check_suite_id}/artifacts/${releaseArtifact.id}) — Heavily optimized with limited validation`
+                },
+                {
+                    "name": "Debug Build",
+                    "value": `[Download APK](https://github.com/skyline-emu/skyline/suites/${selectedRun.check_suite_id}/artifacts/${debugArtifact.id}) — Extra validation and no optimizations for debugging`
+                }
+            ]
+        });
+
+        await message.channel.send(embed);
     }
 }
