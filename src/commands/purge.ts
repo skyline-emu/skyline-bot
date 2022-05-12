@@ -4,7 +4,7 @@ import { Message } from "discord.js";
 /** This command is used to delete a specific amount of messages from a channel */
 export class Purge extends Command {
     constructor() {
-        super("purge", "p", "Deletes the specified amount of messages\n`purge {Amount of Messages}`", AccessLevel.Moderator);
+        super("purge", "p", "Deletes the specified amount of messages\n`purge {Amount of Messages}`", AccessLevel.Helper);
     }
 
     async run(message: Message, content: string[]): Promise<void> {

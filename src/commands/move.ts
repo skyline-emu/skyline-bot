@@ -7,7 +7,7 @@ import config from "../config.json";
 /** This command is used to move a specified amount of messages from one channel to another using webhooks */
 export class Move extends Command {
     constructor() {
-        super("move", "m", "Moves the specified amount of messages to another channel using Webhooks\n`m {Channel} ({Amount}/{Last Message ID}) {First Message ID}`", AccessLevel.Moderator);
+        super("move", "m", "Moves the specified amount of messages to another channel using Webhooks\n`m {Channel} ({Amount}/{Last Message ID}) {First Message ID}`", AccessLevel.Helper);
     }
 
     async run(message: Message, args: string[]): Promise<void> {

@@ -7,7 +7,7 @@ import { assert } from "console";
 /** This command is used to move a specified amount of messages from one channel to another channel or DMs using embeds */
 export class MoveEmbed extends Command {
     constructor() {
-        super("moveembed", "me", "Moves the specified amount of messages to another channel using embeds\n`me {Channel/User} {Amount}`", AccessLevel.Moderator);
+        super("moveembed", "me", "Moves the specified amount of messages to another channel using embeds\n`me {Channel/User} {Amount}`", AccessLevel.Helper);
     }
 
     async run(message: Message, args: string[]): Promise<void> {

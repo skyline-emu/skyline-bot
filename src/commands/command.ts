@@ -4,8 +4,9 @@ import config from "../config.json";
 /** This enumerates all of the access levels a user can have */
 export enum AccessLevel {
     User = 0,
-    Moderator = 1,
-    Admin = 2
+    Helper = 1,
+    Moderator = 2,
+    Admin = 3
 }
 
 /** 
@@ -20,6 +21,9 @@ export function getAccessLevelRole(level: AccessLevel): Snowflake {
             break;
         case AccessLevel.Moderator:
             role = config.moderatorRole;
+            break;
+        case AccessLevel.Helper:
+            role = config.helperRole;
             break;
     }
     return role;
