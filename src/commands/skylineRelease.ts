@@ -59,7 +59,8 @@ export class Release extends Command {
             throw new CommandError(`No CI GitHub Actions workflow found in '${branch}' branch`);
 
         const commit = selectedRun.head_commit!;
-        var commitTitleIndex = commit.message.indexOf("\n");
+        const isOnMirror = selectedRun.head_repository.name === "skyline" && selectedRun.head_repository.owner.login === "skyline-emu";
+        const commitTitleIndex = commit.message.indexOf("\n");
         let embed = new MessageEmbed({
             "title": commitTitleIndex == -1 ? commit.message : commit.message.substring(0, commitTitleIndex),
             "description": commitTitleIndex != -1 ? commit.message.substring(commitTitleIndex + 1) : undefined,
@@ -76,11 +77,12 @@ export class Release extends Command {
             "fields": [
                 {
                     "name": "Release Build (Recommended)",
-                    "value": `[Download APK](https://github.com/skyline-emu/skyline/suites/${selectedRun.check_suite_id}/artifacts/${releaseArtifact.id}) — Heavily optimized with limited validation`
+                    "value": `[Download APK from GitHub](https://github.com/skyline-emu/skyline/suites/${selectedRun.check_suite_id}/artifacts/${releaseArtifact.id}) — Heavily optimized with limited validation\n` +
+                        (isOnMirror ? `[Download APK from Alula's mirror (no login required)](https://skyline-builds.alula.gay/cache/${selectedRun.id}/app-release.apk)` : "")
                 },
                 {
                     "name": "Debug Build",
-                    "value": `[Download APK](https://github.com/skyline-emu/skyline/suites/${selectedRun.check_suite_id}/artifacts/${debugArtifact.id}) — Extra validation and no optimizations for debugging`
+                    "value": `[Download APK from GitHub](https://github.com/skyline-emu/skyline/suites/${selectedRun.check_suite_id}/artifacts/${debugArtifact.id}) — Extra validation and no optimizations for debugging`
                 }
             ]
         });
