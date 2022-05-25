@@ -9,9 +9,8 @@ export class Help extends Command {
     constructor() {
         super("help", "h", "Recieve this help embed in DMs\n`h`", AccessLevel.User);
     }
-
     async run(message: Message): Promise<void> {
-        if (message.channel.type == "dm")
+        if (message.channel.type == "DM")
             throw new CommandError("Retrieving help from DMs is not supported");
 
         let embed = new MessageEmbed({ title: "**Skyline Bot Commands**" });
@@ -24,14 +23,11 @@ export class Help extends Command {
         if (config.dmResponses)
             if (!message.author.dmChannel)
                 message.author.createDM().then(channel => {
-                    channel.send(embed);
+                    channel.send({ embeds: [embed] });
                 });
             else
-                message.author.send(embed);
+                message.author.send({ embeds: [embed] });
         else
-            message.channel.send(embed);
-
-        if (config.deleteTime > 0)
-            message.delete({ timeout: config.deleteTime });
+            message.channel.send({ embeds: [embed] });
     }
 }

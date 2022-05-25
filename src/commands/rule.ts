@@ -43,9 +43,6 @@ export class Rule extends Command {
             default:
                 throw new CommandError("The specified rule wasn't recognized");
         }
-
-        message.channel.send(embed);
-        if (config.deleteTime > 0)
-            message.delete({ timeout: config.deleteTime });
+        message.channel.send({embeds: [embed]});
     }
 }

@@ -8,12 +8,12 @@ export class Purge extends Command {
     }
 
     async run(message: Message, content: string[]): Promise<void> {
-        if (message.channel.type == "dm")
+        if (message.channel.type == "DM")
             throw new CommandError("Purging from DM channels is not supported");
 
         content.shift();
 
-        let purgeAmount: number = Number.parseInt(content[0]) + 1; // Counting the message with the command itself
+        let purgeAmount: number = Number.parseInt(content[0]); // Counting the message with the command itself
         if (isNaN(purgeAmount))
             throw new CommandError("The purge amount is not a valid number");
         if (purgeAmount <= 0)
@@ -21,7 +21,7 @@ export class Purge extends Command {
 
         while (purgeAmount) {
             let amount = Math.min(purgeAmount, 100);
-            message.channel.bulkDelete(amount, true);
+            message.channel.bulkDelete(await message.channel.messages.fetch({ before: message.id, limit: purgeAmount }), true);
             purgeAmount -= amount;
         }
     }

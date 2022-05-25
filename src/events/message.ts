@@ -6,7 +6,7 @@ import { Message, Client } from "discord.js";
 /** This event is used for redirecting all messages to filters */
 export class MessageEvent extends DiscordEvent {
     constructor() {
-        super("message");
+        super("messageCreate");
     }
 
     async run(_: Client, msg: Message): Promise<void> {

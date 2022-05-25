@@ -11,7 +11,7 @@ export class MessageReactionRemove extends DiscordEvent {
     async run(client: Client, reaction: MessageReaction, user: User | PartialUser): Promise<void> {
         config.roleAssignment.forEach(async (item: RoleAssignment) => {
             if (reaction.message.id == item.messageId && (reaction.emoji.id == item.emojiId || reaction.emoji.name == item.emojiId)) {
-                let member = await reaction.message.guild?.member(user.id)!!;
+                let member = await reaction.message.guild?.members.cache.get(user.id)!!;
                 member.roles.remove(item.roleId);
             }
         });

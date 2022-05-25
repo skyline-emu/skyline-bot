@@ -7,7 +7,6 @@ export class Say extends Command {
     }
 
     async run(message: Message, content: string[]): Promise<void> {
-        message.delete();
 
         if (content.length == 0)
             throw new CommandError("You must provide a message to say");

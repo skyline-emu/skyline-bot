@@ -12,8 +12,8 @@ export class Ready extends DiscordEvent {
         let user = client.user!!;
         console.log(`Logged in as ${user.username}#${user.discriminator}!`);
 
-        await user.setPresence({
-            activity: { type: "WATCHING", name: `you! | ${config.prefix}help` },
+        user.setPresence({
+            activities: [{ type: "WATCHING", name: `you! | ${config.prefix}help` }],
             status: "online"
         });
     }

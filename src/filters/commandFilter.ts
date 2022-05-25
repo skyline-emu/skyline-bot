@@ -49,10 +49,10 @@ export class CommandFilter extends Filter {
             else
                 console.error(`Caught Error: ${error}`);
 
-            await message.channel.send(embed);
+            await message.channel.send({embeds: [embed]});
         }).finally(async () => {
             if (config.deleteTime > 0 && !message.deleted)
-                message.delete({ timeout: config.deleteTime });
+                setTimeout(() => message.delete(), config.deleteTime);
         });
 
         return true;
