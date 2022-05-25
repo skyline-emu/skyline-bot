@@ -1,4 +1,4 @@
-import { Client, ClientEvents } from "discord.js";
+import { Client, ClientEvents, Intents } from "discord.js";
 import { DiscordEvent } from "./events/event";
 import { Command } from "./commands/command";
 import { Filter } from "./filters/filter";
@@ -15,7 +15,10 @@ export let commandArray = new Array<Command>();
 export let filterArray = new Array<Filter>();
 
 /** The Discord.JS Client that is used for all communication with the Discord API */
-const client = new Client({ partials: ["MESSAGE", "REACTION"] });
+const client = new Client({ 
+    partials: ["MESSAGE", "REACTION"], 
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.DIRECT_MESSAGE_REACTIONS]
+});
 
 // We start by setting up all events
 for (const EventT of Object.values(events)) {

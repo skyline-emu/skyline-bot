@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, ChannelLogsQueryOptions, WebhookMessageOptions, MessageAttachment } from "discord.js";
+import { Collection, Message, MessageEmbed, ChannelLogsQueryOptions, WebhookMessageOptions, MessageAttachment, TextChannel } from "discord.js";
 import https from "https";
 import { IncomingMessage } from "http";
 import { Command, CommandError, AccessLevel } from "./command";
@@ -11,7 +11,7 @@ export class Move extends Command {
     }
 
     async run(message: Message, args: string[]): Promise<void> {
-        if (message.channel.type == "dm")
+        if (message.channel.type == "DM")
             throw new CommandError("Moving from DM channels is not supported");
 
         if (args.length < 2)
@@ -25,13 +25,13 @@ export class Move extends Command {
 
             while (messageAmount) {
                 let amount = Math.min(messageAmount, 100);
-                Array.prototype.push.apply(messages, (await message.channel.messages.fetch({ limit: amount, before: messages.length ? messages[messages.length - 1].id : message.id }, false)).array());
+                Array.prototype.push.apply(messages, [...(await message.channel.messages.fetch({ limit: amount, before: messages.length ? messages[messages.length - 1].id : message.id })).values()]);
                 messageAmount -= amount;
             }
 
             messages.reverse();
         } else {
-            let lastMessage = await message.channel.messages.fetch(args[1], false), firstMessage = await message.channel.messages.fetch(args[2], false);
+            let lastMessage = await message.channel.messages.fetch(args[1]), firstMessage = await message.channel.messages.fetch(args[2]);
 
             if (firstMessage.createdTimestamp >= lastMessage.createdTimestamp)
                 throw new CommandError("Last message was sent before the first message");
@@ -41,7 +41,7 @@ export class Move extends Command {
             messages.push(firstMessage);
 
             while (true) {
-                let subset = await message.channel.messages.fetch({ limit: 100, after: messages[messages.length - 1].id }, false);
+                let subset = await message.channel.messages.fetch({ limit: 100, after: messages[messages.length - 1].id });
                 if (subset.has(lastMessage.id)) {
                     let flag = false;
                     subset.forEach((value, key) => {
@@ -52,17 +52,17 @@ export class Move extends Command {
                     });
                     break;
                 } else {
-                    Array.prototype.push.apply(messages, subset.array().reverse());
+                    Array.prototype.push.apply(messages, [...subset.values()].reverse());
                 }
             }
         }
 
         if (messages.length > 1000) {
-            const confirmMessage = await message.channel.send(new MessageEmbed({ title: `Moving ${messages.length} messages, confirm ?` }));
+            const confirmMessage = await message.channel.send({ embeds: [new MessageEmbed({ title: `Moving ${messages.length} messages, confirm ?` })]});
             await confirmMessage.react("👍");
             await confirmMessage.react("👎");
             try {
-                let reaction = (await confirmMessage.awaitReactions((reaction, user) => { return ["👍", "👎"].includes(reaction.emoji.name) && user.id == message.author.id; }, { max: 1, time: 60000, errors: ["time"] })).first()!!;
+                let reaction = (await confirmMessage.awaitReactions({ filter: (reaction, user) => { return ["👍", "👎"].includes(reaction.emoji.name!) && user.id == message.author.id; }, max: 1, time: 60000, errors: ["time"] })).first()!!;
                 if (reaction.emoji.name == "👎")
                     return;
             } catch (e) {
@@ -76,7 +76,7 @@ export class Move extends Command {
         if (!channel)
             throw new CommandError("Invalid channel specified");
 
-        let webhook = (await channel.fetchWebhooks()).find((value) => value.name == "SkylineMove") ?? await channel.createWebhook("SkylineMove");
+        let webhook = (await (channel as TextChannel).fetchWebhooks()).find((value) => value.name == "SkylineMove") ?? await (channel as TextChannel).createWebhook("SkylineMove");
 
         for (const message of messages) {
             let MessageAttachments = Array<MessageAttachment>();
@@ -90,16 +90,25 @@ export class Move extends Command {
 
                 MessageAttachments.push(new MessageAttachment(content, messageMessageAttachment.name ?? undefined));
             }
-
-            let options: WebhookMessageOptions & { split?: false } = {
-                username: `${message.author.username}`,
-                avatarURL: message.author.avatarURL() ?? undefined,
-                files: MessageAttachments,
-                embeds: message.embeds,
-                disableMentions: "all",
-            };
-
-            await webhook.send(message.content, options);
+            if (message.content.length > 0) {
+                await webhook.send({
+                    content: message.content,
+                    username: message.author.username,
+                    avatarURL: message.author.avatarURL() ?? undefined,
+                    files: MessageAttachments,
+                    embeds: message.embeds,
+                    allowedMentions: {parse: []},
+                });
+            } else {
+                await webhook.send({
+                    username: message.author.username,
+                    avatarURL: message.author.avatarURL() ?? undefined,
+                    files: MessageAttachments,
+                    embeds: message.embeds,
+                    allowedMentions: {parse: []},
+                });
+            }
+            
         }
 
         let left = messages.length;
@@ -109,8 +118,8 @@ export class Move extends Command {
             left -= amount;
         }
 
-        const resultMessage = await message.channel.send(new MessageEmbed({ title: "Success" }));
+        const resultMessage = await message.channel.send({ embeds: [new MessageEmbed({ title: "Success" })]});
         if (resultMessage instanceof Message)
-            resultMessage.delete({ timeout: config.deleteTime });
+            setTimeout(() => resultMessage.delete(), config.deleteTime);
     }
 }

@@ -39,7 +39,7 @@ export async function userHasAccess(user: User, guild: Guild, level: AccessLevel
     if (level == AccessLevel.User)
         return true;
 
-    let roles = await (await guild?.member(user)!!).roles;
+    let roles = await (await guild?.members.cache.get(user.id)!!).roles;
     for (let index = level; index <= AccessLevel.Admin; index++) {
         let levelRole = getAccessLevelRole(index);
         if (roles.cache.has(levelRole))

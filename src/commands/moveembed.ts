@@ -11,7 +11,7 @@ export class MoveEmbed extends Command {
     }
 
     async run(message: Message, args: string[]): Promise<void> {
-        if (message.channel.type == "dm")
+        if (message.channel.type == "DM")
             throw new CommandError("Moving from DM channels is not supported");
 
         if (args.length < 2)
@@ -30,7 +30,7 @@ export class MoveEmbed extends Command {
             channel = message.mentions.channels.first()!!;
             channelDescriptor = `<#${channel.id}>`;
 
-            const channelPermissions = channel.permissionsFor(message.client.user!!)!!;
+            const channelPermissions = (channel as TextChannel).permissionsFor(message.client.user!!)!!;
             if (!channelPermissions.has("SEND_MESSAGES"))
                 throw new CommandError(`Insufficient permissions to send message in channel: <#${channel.id}>`);
         } else {
@@ -40,12 +40,12 @@ export class MoveEmbed extends Command {
         let messages = new Array<Message>();
         while (messageAmount) {
             let amount = Math.min(messageAmount, 10);
-            Array.prototype.push.apply(messages, (await message.channel.messages.fetch({ limit: amount, before: messages.length ? messages[messages.length - 1].id : message.id }, false)).array());
+            Array.prototype.push.apply(messages, [...(await message.channel.messages.fetch({ limit: amount, before: messages.length ? messages[messages.length - 1].id : message.id })).values()]);
             messageAmount -= amount;
         }
         messages = messages.reverse();
 
-        let embed = new MessageEmbed({ title: `**Chat from <#${message.channel.id}>**` }), left = messages.length;
+        let embed = new MessageEmbed({ title: `**Chat from ${message.channel.name}**` }), left = messages.length;
         while (left) {
             let index = messages.length - left, amount = Math.min(left, 100);
             message.channel.bulkDelete(messages.slice(index, index + amount), true);
@@ -56,9 +56,9 @@ export class MoveEmbed extends Command {
                 index = messages.length - left;
 
                 for (const message of messages.slice(index, index + amountEmbed))
-                    embed.addField(message.author.username, serializeMessage(message).substr(0, 1024), false);
+                    embed.addField(message.author.username, serializeMessage(message).substring(0, 1024), false);
 
-                await channel.send(embed);
+                await (channel as TextChannel).send({embeds: [embed]});
                 embed = new MessageEmbed();
 
                 leftEmbed -= amountEmbed;
@@ -67,8 +67,8 @@ export class MoveEmbed extends Command {
             left -= amount;
         }
 
-        const resultMessage = await message.channel.send(new MessageEmbed({ description: `Successfully moved ${messages.length} messages to ${channelDescriptor}` }));
+        const resultMessage = await message.channel.send({ embeds: [new MessageEmbed({ description: `Successfully moved ${messages.length} messages to ${channelDescriptor}` })]});
         if (resultMessage instanceof Message)
-            resultMessage.delete({ timeout: config.deleteTime });
+            setTimeout(() => resultMessage.delete(), config.deleteTime)
     }
 }
