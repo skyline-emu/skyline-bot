@@ -34,11 +34,11 @@ export class Release extends Command {
                 })).data.artifacts;
 
                 for (let artifact of artifacts) {
-                    if (artifact.name == "app-release.apk") {
+                    if (artifact.name.endsWith("release.apk")) {
                         releaseArtifact = artifact;
                         if (debugArtifact)
                             break;
-                    } else if (artifact.name == "app-debug.apk") {
+                    } else if (artifact.name.endsWith("debug.apk")) {
                         debugArtifact = artifact;
                         if (releaseArtifact)
                             break;
