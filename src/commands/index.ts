@@ -5,3 +5,4 @@ export * from "./purge";
 export * from "./skylineRelease";
 export * from "./rule";
 export * from "./say";
+export * from "./gameStatus";
