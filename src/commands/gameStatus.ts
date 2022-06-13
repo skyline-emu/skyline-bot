@@ -63,7 +63,7 @@ export class GameStatus extends Command {
                 let labelNames = "";
                 for (const i of finalSearch.data.items[0].labels)
                     labelNames += `\`${i.name}\` `;
-                if (labelNames = "")
+                if (labelNames == "")
                     labelNames = "none";
                 let body = finalSearch.data.items[0].body!.split("###");
                 body.splice(0, 2);
