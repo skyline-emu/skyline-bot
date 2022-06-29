@@ -5,6 +5,8 @@
   "dmResponses": true,
   "adminRole": "",
   "moderatorRole": "",
+  "helperRole" : "",
+  "attachmentOnlyChannels" : [],
   "userWhitelist": [],
   "roleAssignment": []
 }
