@@ -9,7 +9,7 @@ const octokit = new Octokit();
 /** This command is used to check the compatibility of a game on Skyline through the Skyline Games List on GitHub */
 export class GameStatus extends Command {
     constructor() {
-        super("gamestatus", "gs", "Checks the status of a game on the Skyline Games List\n`gamestatus {Game to Lookup}`", AccessLevel.User);
+        super("gamestatus", "gs", "Checks the status of a game on the Skyline Games List\n`gs {Game to Lookup}`", AccessLevel.User);
     }
 
     async run(message: Message, content: string[]): Promise<void> {
@@ -23,7 +23,7 @@ export class GameStatus extends Command {
         let gitSearchTitles = [];
 
         if (gitSearch.data.items.length <= 0)
-            throw new CommandError("No results found! Check for spelling errors, or manually test and add issue here: https://github.com/skyline-emu/skyline-games-list/issues");
+            throw new CommandError("No results found! Check for spelling errors, or manually test and add issue [here](https://github.com/skyline-emu/skyline-games-list/issues).");
 
         for (const i of gitSearch.data.items)
             gitSearchTitles.push(i.title);
@@ -31,8 +31,7 @@ export class GameStatus extends Command {
         let embed = new MessageEmbed()
             .setColor("BLUE")
             .setTitle("**Skyline Game Compatibility Check**")
-            .setDescription(`<@${message.author.id}> Select your desired game from the list`);
-        
+            .setDescription(`<@${message.author.id}> Select your desired game from the list`)        
         let rowOptions: MessageSelectOptionData[] = [];
         for (const i of gitSearchTitles) {
             if (gitSearchTitles.indexOf(i) == 25) {
@@ -81,37 +80,33 @@ export class GameStatus extends Command {
                 body.splice(0, 3);
                 
                 let logs = body[1].replace("Log file", "");
-                if (logs.indexOf("```") == -1) {
-                    botMessage.edit({
-                        embeds: [new MessageEmbed()
-                            .setColor("BLUE")
-                            .setTitle(finalSearch.data.items[0].title)
-                            .setURL(finalSearch.data.items[0].html_url)
-                            .addField("Labels", labelNames)
-                            .addField("Device Details", deviceDetails.join(" ").replace("  ", " ").replace("  ", " ").replace(/\n|\r/gm, ""))
-                            .addField("Build", build)
-                            .addField("Game Behavior", body[0].replace("Game Behaviour", "").replace(/!/gm, "").replace("- ", ""))
-                            .addField("Logs", logs)
-                            .setFooter({ text: `Issue #${finalSearch.data.items[0].number}`, iconURL: "https://avatars.githubusercontent.com/u/52578041" })
-                        ],
-                        components: []
-                    });
+                if (!logs.includes("http")) {
+                    logs = "no logs provided"
                 } else {
-                    botMessage.edit({
-                        embeds: [new MessageEmbed()
-                            .setColor("BLUE")
-                            .setTitle(finalSearch.data.items[0].title)
-                            .setURL(finalSearch.data.items[0].html_url)
-                            .addField("Labels", labelNames)
-                            .addField("Device Details", deviceDetails.join(" ").replace("  ", " ").replace("  ", " ").replace(/\n|\r/gm, ""))
-                            .addField("Build", build)
-                            .addField("Game Behavior", body[0].replace("Game Behaviour", "").replace(/!/gm, "").replace("- ", ""))
-                            .addField("Logs", logs.substring(0, logs.indexOf("```")))
-                            .setFooter({ text: `Issue #${finalSearch.data.items[0].number}`, iconURL: "https://avatars.githubusercontent.com/u/52578041" })
-                        ],
-                        components: []
-                    });
+                    logs = logs.replace(logs.substring(logs.indexOf("```") + 1, logs.lastIndexOf("```")), "");
+                    logs = logs.replace("\n````", "")
+                    logs = logs.replace(logs.substring(logs.indexOf("``") + 1, logs.lastIndexOf("``")), "");
                 }
+                
+                botMessage.edit({
+                    embeds: [new MessageEmbed()
+                        .setColor("BLUE")
+                        .setTitle(finalSearch.data.items[0].title)
+                        .setURL(finalSearch.data.items[0].html_url)
+                        .addFields(
+                            { name: "Labels", value: labelNames },
+                            { name: "Device Details", value: deviceDetails.join(" ").replace("  ", " ").replace("  ", " ").replace(/\n|\r/gm, "") },
+                            { name: "Build", value: build },
+                            { name: "Game Behavior", value: body[0].replace("Game Behaviour", "").replace(/!/gm, "").replace("- ", "") },
+                            { name: "Logs", value: logs },
+                        )
+                        .setFooter({ text: `Issue #${finalSearch.data.items[0].number}`, iconURL: "https://avatars.githubusercontent.com/u/52578041" })
+                    ],
+                    components: []
+                });
+
+            } else {
+                i.reply({ content: 'This is not your command! Please run gamestatus using ".gs" or ".gamestatus"', ephemeral: true })
             }
         });
 
@@ -133,4 +128,3 @@ export class GameStatus extends Command {
                  
     }
 }
-
