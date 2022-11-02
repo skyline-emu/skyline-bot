@@ -5,33 +5,52 @@ export class OnShowcaseMsg extends Filter {
     constructor() {
         super(9);
     }
-    //Do the following upon a new message in the discord server
-    //1. Check if the message is in the showcase channel (1033815355866497064)
-    //2. If it is, check if the message is a link
-    //3. If it is a link, add it to the showcase.json file
     async run(message: Message<boolean>): Promise<boolean> {
-        if (message.channel.id == "986020197146169354") {
+        if (message.channel.id == "1036962169264283678"|| message.channel.id == "986020197146169354") {
             if (message.content.includes("https://")) {
+                //If the user is a bot
+                if (message.author.bot) {
+                    return true;
+                }
                 let msginfo = {
                     "message": message.content,
                     "author": message.author.username,
                 }
-                //Find the [] brackets in the showcase.json file
                 let showcase = fs.readFileSync("showcase.json", "utf8");
-                //If the file is empty, do not use a comma
                 showcase = showcase.replace("[", "");
                 showcase = showcase.replace("]", "");
                 showcase = showcase + "," + JSON.stringify(msginfo);
-                //Add the brackets back to the showcase.json file
                 showcase = "[" + showcase + "]";
-                //If the file has nothing other than the brackets, remove the comma
                 showcase = showcase.replace("[,", "[");
                 showcase.replace(",]", "]");
                 fs.writeFileSync("showcase.json", showcase);
                 console.log("Succesfully added "+ message.author.username + "'s message to showcase.json");
             }
+            else {
+                //If the message has an attachment
+                if (message.attachments.size > 0) {
+                    message.attachments.forEach(attachment => {
+                        //Store each attachment in a varible
+                        let msginfo = {
+                            "message": attachment.url,
+                            "author": message.author.username,
+                        }
+                        //Only allow up to 2 attachments per message
+                        let showcase = fs.readFileSync("showcase.json", "utf8");
+                        showcase = showcase.replace("[", "");
+                        showcase = showcase.replace("]", "");
+                        showcase = showcase + "," + JSON.stringify(msginfo);
+                        showcase = "[" + showcase + "]";
+                        showcase = showcase.replace("[,", "[");
+                        showcase.replace(",]", "]");
+                        showcase.replace("\n", "");
+                        showcase.replace("\r", "");
+                        fs.writeFileSync("showcase.json", showcase);
+                        console.log("Succesfully added "+ message.author.username + "'s message to showcase.json");
+                    });
+                }
+            }
         }
-
-    return true;
-        }
+        return true;
     }
+}

@@ -20,6 +20,11 @@ export class RandomShowcase extends Command {
         let randomshowcasemessage = randomshowcasearray[0];
         let randomshowcaseauthor = randomshowcasearray[1];
         randomshowcasemessage = randomshowcasemessage.replace('"message":"', "");
+        randomshowcasemessage = randomshowcasemessage.replace("]", "");
+        randomshowcasemessage = randomshowcasemessage.replace("[", "");
+        randomshowcaseauthor = randomshowcasemessage.replace("]", "");
+        randomshowcaseauthor = randomshowcasemessage.replace("[", "");
+        
         randomshowcasemessage = randomshowcasemessage.replace('"', "");
         randomshowcaseauthor = randomshowcaseauthor.replace('"author":"', "");
         randomshowcaseauthor = randomshowcaseauthor.replace('"', "");
