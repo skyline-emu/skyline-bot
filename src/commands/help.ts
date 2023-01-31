@@ -1,33 +1,31 @@
-import { MessageEmbed } from "discord.js";
-import { AccessLevel, Command, CommandError, userHasAccess } from "./command";
-import { Message } from "discord.js";
-import { commandArray } from "../main";
-import config from "../config.json";
+//@ts-ignore
+import config from "../config.json" assert { type: "json" };
+import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { AccessLevel, userHasAccess } from "../common/commonFunctions.js";
+import fs from "node:fs";
 
-/** This command is used to provide a users with the summary of all commands that the bot has to offer */
-export class Help extends Command {
-    constructor() {
-        super("help", "h", "Recieve this help embed in DMs\n`h`", AccessLevel.User);
+export const command = {
+    data: new SlashCommandBuilder()
+        .setName("help")
+        .setDescription("Recieve this help embed in DMs"),
+    level: AccessLevel.User,
+    async execute(interaction: ChatInputCommandInteraction) {
+        let embed = new EmbedBuilder({ title: "**Skyline Bot Commands**" }).setColor("Green");
+
+        const commandFiles = fs.readdirSync("./build/commands").filter(file => file.endsWith(".js"));
+
+        for (const file of commandFiles){
+            const { command } = await import(`./${file}`);
+            if (userHasAccess(interaction.user, interaction.guild!, command.level)){
+                embed.addFields({ name: command.data.name, value: command.data.description, inline: false});
+            }
+        }
+        if (config.dmResponses) {
+            await interaction.reply({ content: "Check DMs", ephemeral: true });
+            interaction.user.send({ embeds: [embed] });
+            await interaction.deleteReply();
+        } else {
+            await interaction.reply({ embeds: [embed] });
+        }
     }
-    async run(message: Message): Promise<void> {
-        if (message.channel.type == "DM")
-            throw new CommandError("Retrieving help from DMs is not supported");
-
-        let embed = new MessageEmbed({ title: "**Skyline Bot Commands**" });
-        embed.setColor("GREEN");
-
-        for (const command of commandArray)
-            if (await userHasAccess(message.author, message.guild!!, command.access))
-                embed.addField(command.name, command.description, false);
-
-        if (config.dmResponses)
-            if (!message.author.dmChannel)
-                message.author.createDM().then(channel => {
-                    channel.send({ embeds: [embed] });
-                });
-            else
-                message.author.send({ embeds: [embed] });
-        else
-            message.channel.send({ embeds: [embed] });
-    }
-}
+};

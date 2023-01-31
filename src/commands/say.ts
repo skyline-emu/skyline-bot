@@ -1,32 +1,76 @@
-import { Command, AccessLevel, CommandError } from "./command";
-import { Message, Snowflake } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder, ChannelType, TextChannel } from "discord.js";
+import { AccessLevel } from "../common/commonFunctions.js";
 
-export class Say extends Command {
-    constructor() {
-        super("say", "s", "Sends a message from the bot\n`say ({User}/{Channel} - Optional) {Message}`", AccessLevel.Moderator);
-    }
+export const command = {
+    data: new SlashCommandBuilder()
+        .setName("say")
+        .setDescription("Sends a message from the bot")
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("direct-message")
+                .setDescription("Sends a message from the bot to a user in DMs")
+                .addStringOption(option =>
+                    option
+                        .setName("message")
+                        .setDescription("The message to send")
+                        .setRequired(true))
+                .addUserOption(option =>
+                    option
+                        .setName("target-user")
+                        .setDescription("The user to DM")
+                        .setRequired(true)))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("guild-channel")
+                .setDescription("Sends a message from the bot in a specified channel")
+                .addStringOption(option =>
+                    option
+                        .setName("message")
+                        .setDescription("The message to send")
+                        .setRequired(true))
+                .addChannelOption(option => 
+                    option
+                        .setName("target-channel")
+                        .setDescription("The channel to send the message in")
+                        .setRequired(true)
+                        .addChannelTypes(
+                            ChannelType.GuildText,
+                            ChannelType.PublicThread, 
+                            ChannelType.PrivateThread, 
+                            ChannelType.GuildVoice,
+                            ChannelType.GuildAnnouncement,
+                            ChannelType.AnnouncementThread,
+                            ChannelType.GuildStageVoice)))		
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("default")
+                .setDescription("Sends a message from the bot in the current channel")
+                .addStringOption(option =>
+                    option
+                        .setName("message")
+                        .setDescription("The message to send")
+                        .setRequired(true))),
+    level: AccessLevel.Admin,
+    async execute(interaction: ChatInputCommandInteraction) {
+        const message = interaction.options.getString("message");
+        if (message!.length > 2000)
+            return interaction.reply({ content: "Message length must be 2000 characters or less", ephemeral: true });
 
-    async run(message: Message, content: string[]): Promise<void> {
-
-        if (content.length == 0)
-            throw new CommandError("You must provide a message to say");
-
-        let channel: any;
-
-        if (content[0].startsWith("<#")) {
-            let channelId: Snowflake = content[0].substring(2, content[0].length - 1);
-            channel = message.client.channels.fetch(channelId);
-
-            content.shift();
-        } else if (content[0].startsWith("<@!")) {
-            let userId: Snowflake = content[0].substring(3, content[0].length - 1);
-            channel = await message.client.users.fetch(userId);
-
-            content.shift();
-        } else {
-            channel = message.channel;
+        switch(interaction.options.getSubcommand()){
+            case "direct-message":
+                const user = interaction.options.getUser("target-user");
+                await interaction.reply({ content: `Message sent to ${user?.username}`, ephemeral: true });
+                user?.send(message!);
+                break;
+            case "guild-channel":
+                const channel = interaction.options.getChannel("target-channel");
+                await interaction.reply({ content: `Message sent to ${channel}`, ephemeral: true });
+                (channel as TextChannel).send(message!);
+                break;
+            case "default":
+                interaction.channel?.send(message!);
+                await interaction.reply({ content: "Message sent to current channel", ephemeral: true });
+                break;
         }
-
-        channel.send(content.join(" "));
     }
-}
+};

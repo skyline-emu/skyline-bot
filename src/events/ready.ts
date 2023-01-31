@@ -1,20 +1,14 @@
-import { DiscordEvent } from "./event";
-import config from "../config.json";
-import { Client } from "discord.js";
+import { ActivityType, Client, Events } from "discord.js";
 
-/** This event is used to do some setup after the bot has established a connection with the Discord API */
-export class Ready extends DiscordEvent {
-    constructor() {
-        super("ready");
-    }
+export const event = {
+    name: Events.ClientReady,
+    once: true,
+    execute(client: Client) {
+        console.log(`Logged in as ${client.user!.username}#${client.user!.discriminator}!`);
 
-    async run(client: Client): Promise<void> {
-        let user = client.user!!;
-        console.log(`Logged in as ${user.username}#${user.discriminator}!`);
-
-        user.setPresence({
-            activities: [{ type: "WATCHING", name: `you! | ${config.prefix}help` }],
+        client.user!.setPresence({
+            activities: [{ type: ActivityType.Watching, name: "/help" }],
             status: "online"
         });
     }
-}
+};
