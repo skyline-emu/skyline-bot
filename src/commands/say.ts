@@ -51,7 +51,7 @@ export const command = {
                         .setDescription("The message to send")
                         .setRequired(true))),
     level: AccessLevel.Admin,
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute(interaction: ChatInputCommandInteraction) {
         const message = interaction.options.getString("message");
         if (message!.length > 2000)
             return interaction.reply({ content: "Message length must be 2000 characters or less", ephemeral: true });
@@ -59,18 +59,17 @@ export const command = {
         switch(interaction.options.getSubcommand()){
             case "direct-message":
                 const user = interaction.options.getUser("target-user");
-                await interaction.reply({ content: `Message sent to ${user?.username}`, ephemeral: true });
                 user?.send(message!);
+                interaction.reply({ content: `Message sent to ${user?.username}`, ephemeral: true });
                 break;
             case "guild-channel":
                 const channel = interaction.options.getChannel("target-channel");
-                await interaction.reply({ content: `Message sent to ${channel}`, ephemeral: true });
                 (channel as TextChannel).send(message!);
+                interaction.reply({ content: `Message sent to ${channel}`, ephemeral: true });
                 break;
             case "default":
                 interaction.channel?.send(message!);
-                await interaction.reply({ content: "Message sent to current channel", ephemeral: true });
-                break;
+                interaction.reply({ content: "Message sent to current channel", ephemeral: true });
         }
     }
 };
