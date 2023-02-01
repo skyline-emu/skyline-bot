@@ -1,12 +1,15 @@
 {
   "token": "",
-  "prefix": "?",
+  "guildId": "",
+  "clientId": "",
   "deleteTime": 10000,
   "dmResponses": true,
   "adminRole": "",
   "moderatorRole": "",
-  "helperRole" : "",
-  "attachmentOnlyChannels" : [],
+  "helperRole": "",
+  "edgeRole": "",
+  "exEdgeRole": "",
+  "attachmentOnlyChannels": [],
   "userWhitelist": [],
   "roleAssignment": []
 }
