@@ -1,18 +1,18 @@
 //@ts-ignore
 import config from "../config.json" assert { type : "json" };
 import { ActionRowBuilder, AttachmentBuilder, ButtonBuilder, ButtonStyle, ChannelType, ChatInputCommandInteraction, ComponentType, EmbedBuilder, Message, SlashCommandBuilder, TextChannel } from "discord.js";
-import { AccessLevel, serializeMessage } from "../common/commonFunctions.js";
+import { AccessLevel, isSnowflake, serializeMessage } from "../common/commonFunctions.js";
 import { IncomingMessage } from "http";
 import https from "https";
 
 export const command = {
     data: new SlashCommandBuilder()
         .setName("move")
-        .setDescription("Moves the specified amount of messages to another channel using Webhooks")
+        .setDescription("Moves the specified amount of messages to another channel using Webhooks (max 100)")
         .addSubcommand(subcommand =>
             subcommand
                 .setName("default")
-                .setDescription("Moves the specified amount of messages")
+                .setDescription("Moves the specified amount of messages (max 100)")
                 .addChannelOption(option =>
                     option
                         .setName("channel")
@@ -29,12 +29,12 @@ export const command = {
                 .addIntegerOption(option =>
                     option
                         .setName("amount")
-                        .setDescription("The amount of messages to move")
+                        .setDescription("The amount of messages to move (max 100)")
                         .setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName("ids")
-                .setDescription("Moves one or more messages using IDs")
+                .setDescription("Moves one or more messages using IDs (max 100)")
                 .addChannelOption(option =>
                     option
                         .setName("channel")
@@ -50,12 +50,12 @@ export const command = {
                             ChannelType.GuildStageVoice))
                 .addStringOption(option =>
                     option
-                        .setName("first-message-id")
+                        .setName("earliest-msg-id")
                         .setDescription("First message ID")
                         .setRequired(true))
                 .addStringOption(option =>
                     option
-                        .setName("last-message-id")
+                        .setName("latest-msg-id")
                         .setDescription("Last message ID")
                         .setRequired(true))),
     level: AccessLevel.Helper,
@@ -65,55 +65,43 @@ export const command = {
         let channel = interaction.options.getChannel("channel");
 
         if (interaction.options.getSubcommand() == "default") {
-            let messageAmount = interaction.options.getInteger("amount");
-            if (messageAmount! <= 0)
-                return interaction.editReply({ content: "Invalid amount of messages specified" });
-
-            while (messageAmount) {
-                let amount = Math.min(messageAmount, 100);
-                Array.prototype.push.apply(messages, [...(await interaction.channel!.messages.fetch({ limit: amount })).values()]);
-                messageAmount -= amount;
+            let messageAmount = interaction.options.getInteger("amount")!;
+            if (messageAmount <= 0 || messageAmount > 100)
+                return interaction.editReply({ content: "The purge amount must be greater than 0 and no more than 100" });
+            Array.prototype.push.apply(messages, [...(await interaction.channel!.messages.fetch({ limit: messageAmount })).values()].reverse());
+            if (messages.length == 0) {
+                return interaction.editReply({ content: "No messages to purge" });
             }
-            messages.reverse();
-            if (!messages.length)
-                return interaction.editReply({ content: "Channel needs at least one message to move" });
         } else {
-            let firstmID : any = interaction.options.getString("first-message-id"), lastmID : any = interaction.options.getString("last-message-id");
-
-            if (!/^\d{15,20}$/.test(lastmID) || !/^\d{15,20}$/.test(firstmID)) //Checks for non-digits and extra digits
+            let firstmID = interaction.options.getString("earliest-msg-id")!, lastmID = interaction.options.getString("latest-msg-id")!;
+            if (!isSnowflake(lastmID) || !isSnowflake(firstmID))
                 return interaction.editReply({ content: "One or both ID submissions are not Snowflakes" });
             try {
-                await interaction.channel!.messages.fetch(lastmID);
                 await interaction.channel!.messages.fetch(firstmID);
+                await interaction.channel!.messages.fetch(lastmID);
             } catch (err) {
                 console.error(err);
-                return interaction.editReply({ content: "Unknown Message" });
+                return interaction.editReply({ content: "Unknown message" });
             }
-			
-            let lastMessage = await interaction.channel!.messages.fetch(lastmID), firstMessage = await interaction.channel!.messages.fetch(firstmID);
 
+            let firstMessage = await interaction.channel!.messages.fetch(firstmID), lastMessage = await interaction.channel!.messages.fetch(lastmID);
             if (firstMessage.createdTimestamp > lastMessage.createdTimestamp)
                 return interaction.editReply({ content: "Last message was sent before the first message" });
-            if (firstMessage.channel.id != lastMessage.channel.id)
-                return interaction.editReply({ content: "Messages weren't sent in the same channel" });
-
             if (firstMessage === lastMessage) {
                 messages.push(firstMessage);
             } else {
+                let subset = await interaction.channel!.messages.fetch({ limit: 99, after: firstmID });
+                let tempMessages = new Array<Message>();
+                tempMessages.push(firstMessage);
+                Array.prototype.push.apply(tempMessages, [...subset.values()].reverse());
                 while (true) {
-                    let subset = await interaction.channel!.messages.fetch({ limit: 100, after: messages[messages.length - 1].id });
-                    if (subset.has(lastMessage.id)) {
-                        let flag = false;
-                        subset.forEach((value, key) => {
-                            if (key == lastMessage.id)
-                                flag = true;
-                            if (flag)
-                                messages.push(value);
-                        });
-                        break;
+                    let testMessage = tempMessages.find(message => message.createdTimestamp <= lastMessage.createdTimestamp);
+                    if (testMessage) {
+                        messages.push(testMessage);
+                        tempMessages.splice(tempMessages.indexOf(testMessage), 1);
                     } else {
-                        Array.prototype.push.apply(messages, [...subset.values()].reverse());
-                    }
+                        break;
+                    };
                 }
             }
         }
@@ -129,7 +117,7 @@ export const command = {
                     .setLabel("No")
                     .setStyle(ButtonStyle.Secondary));
 		
-        let response = await interaction.editReply({ embeds: [new EmbedBuilder({title: `Moving ${messages.length} messages to ${channel!.name}, confirm?`, fields: [{ name: "Oldest message:", value: serializeMessage(messages[0]) }] })], components: [button]});
+        let response = await interaction.editReply({ embeds: [new EmbedBuilder({title: `Moving ${messages.length} messages to ${channel!.name}, confirm`, fields: [{ name: "Earliest message:", value: serializeMessage(messages[0]) }, {name: "Latest message:", value: serializeMessage(messages[messages.length - 1])}] })], components: [button]});
         let webhook = (await (channel as TextChannel).fetchWebhooks()).find((value) => value.name == "SkylineMove") ?? await (channel as TextChannel).createWebhook({ name: "SkylineMove"});
 		
         response.awaitMessageComponent({ time: config.deleteTime, componentType: ComponentType.Button })
@@ -146,6 +134,7 @@ export const command = {
                             .setLabel("No")
                             .setStyle(ButtonStyle.Secondary)
                             .setDisabled(true));
+                    recievedButton.update({ embeds: [new EmbedBuilder({ title: `Moving ${messages.length} messages...` }).setColor("Green")], components: [button]});
                     for (const message of messages) {
                         let MessageAttachments = Array<AttachmentBuilder>();
 
@@ -178,13 +167,8 @@ export const command = {
                         }
                     }
 
-                    let left = messages.length;
-        			while (left) {
-            			let index = messages.length - left, amount = Math.min(left, 100);
-            			(interaction.channel! as TextChannel).bulkDelete(messages.slice(index, index + amount), true);
-            			left -= amount;
-        			}
-                    recievedButton.update({ embeds: [new EmbedBuilder({ title: `${messages.length} messages moved.` }).setColor("Green")], components: [button]});
+                    await (interaction.channel! as TextChannel).bulkDelete(messages, true);
+                    recievedButton.editReply({ embeds: [new EmbedBuilder({ title: `${messages.length} messages moved` }).setColor("Green")], components: [button]});
                 } else {
                     button.setComponents(
                         new ButtonBuilder()
@@ -197,10 +181,10 @@ export const command = {
                             .setLabel("No")
                             .setStyle(ButtonStyle.Danger)
                             .setDisabled(true));
-                    recievedButton.update({ embeds: [new EmbedBuilder({ title: "Move canceled." }).setColor("Red")], components: [button]});
+                    recievedButton.update({ embeds: [new EmbedBuilder({ title: "Move canceled" }).setColor("Red")], components: [button]});
                 }
             }, async () => {
-                interaction.editReply({embeds: [new EmbedBuilder({ title: `No confirmation within ${config.deleteTime/1000} seconds.` }).setColor("Red")], components: []});
+                interaction.editReply({embeds: [new EmbedBuilder({ title: `No confirmation within ${config.deleteTime/1000} seconds` }).setColor("Red")], components: []});
             })
             .catch(console.error);		
     }
