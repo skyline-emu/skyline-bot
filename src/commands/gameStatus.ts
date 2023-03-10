@@ -59,51 +59,55 @@ export const command = {
         const collector = interaction2.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 30000 });
 
         collector.on("collect", async i => {
-            let finalSearch = await octokit.request("GET /search/issues", { q:i.values[0] + "+repo:skyline-emu/skyline-games-list+type:issues+is:open" });
-            let labelNames = "";
-            for (const i of finalSearch.data.items[0].labels)
-                labelNames += `\`${i.name}\` `;
-            if (labelNames == "")
-                labelNames = "none";
-            let body = finalSearch.data.items[0].body!.split("###");
-            body.splice(0, 2);
-            body.splice(5, 1);
-            body.splice(3, 1);
-            body[0] = body[0].replace("Tested Build", "");
-            body[1] = body[1].replace("Android Version", "Android ");
-            body[2] = body[2].replace("SoC type", "using ");
-			
-            let deviceDetails = [];
-            deviceDetails.push(body[1], body[2]);
-			
-            let build = body[0].replace(/\n|\r/gm, "");
-            deviceDetails[1] += " Processor";
-            body.splice(0, 3);
-			
-            let logs = body[1].replace("Log file", "");
-            if (!logs.includes("http")) {
-                logs = "no logs provided";
+            if (i.user.id != interaction.user.id) {
+                i.reply({ content: "This is not your command; create your own command", ephemeral: true});
             } else {
-                logs = logs.replace(logs.substring(logs.indexOf("```") + 1, logs.lastIndexOf("```")), "");
-                logs = logs.replace("\n````", "");
-                logs = logs.replace(logs.substring(logs.indexOf("``") + 1, logs.lastIndexOf("``")), "");
+                let finalSearch = await octokit.request("GET /search/issues", { q:i.values[0] + "+repo:skyline-emu/skyline-games-list+type:issues+is:open" });
+                let labelNames = "";
+                for (const i of finalSearch.data.items[0].labels)
+                    labelNames += `\`${i.name}\` `;
+                if (labelNames == "")
+                    labelNames = "none";
+                let body = finalSearch.data.items[0].body!.split("###");
+                body.splice(0, 2);
+                body.splice(5, 1);
+                body.splice(3, 1);
+                body[0] = body[0].replace("Tested Build", "");
+                body[1] = body[1].replace("Android Version", "Android ");
+                body[2] = body[2].replace("SoC type", "using ");
+                
+                let deviceDetails = [];
+                deviceDetails.push(body[1], body[2]);
+                
+                let build = body[0].replace(/\n|\r/gm, "");
+                deviceDetails[1] += " Processor";
+                body.splice(0, 3);
+                
+                let logs = body[1].replace("Log file", "");
+                if (!logs.includes("http")) {
+                    logs = "no logs provided";
+                } else {
+                    logs = logs.replace(logs.substring(logs.indexOf("```") + 1, logs.lastIndexOf("```")), "");
+                    logs = logs.replace("\n````", "");
+                    logs = logs.replace(logs.substring(logs.indexOf("``") + 1, logs.lastIndexOf("``")), "");
+                }
+                
+                interaction.editReply({
+                    embeds: [new EmbedBuilder()
+                        .setColor("Blue")
+                        .setTitle(finalSearch.data.items[0].title)
+                        .setURL(finalSearch.data.items[0].html_url)
+                        .addFields(
+                            { name: "Labels", value: labelNames },
+                            { name: "Device Details", value: deviceDetails.join(" ").replace("  ", " ").replace("  ", " ").replace(/\n|\r/gm, "") },
+                            { name: "Build", value: build },
+                            { name: "Game Behavior", value: body[0].replace("Game Behaviour", "").replace(/!/gm, "").replace("- ", "").substring(0, 1021).concat("...") },
+                            { name: "Logs", value: logs },
+                        )
+                        .setFooter({ text: `Issue #${finalSearch.data.items[0].number}`, iconURL: "https://avatars.githubusercontent.com/u/52578041" })
+                    ], components: []
+                });
             }
-			
-            interaction.editReply({
-                embeds: [new EmbedBuilder()
-                    .setColor("Blue")
-                    .setTitle(finalSearch.data.items[0].title)
-                    .setURL(finalSearch.data.items[0].html_url)
-                    .addFields(
-                        { name: "Labels", value: labelNames },
-                        { name: "Device Details", value: deviceDetails.join(" ").replace("  ", " ").replace("  ", " ").replace(/\n|\r/gm, "") },
-                        { name: "Build", value: build },
-                        { name: "Game Behavior", value: body[0].replace("Game Behaviour", "").replace(/!/gm, "").replace("- ", "") },
-                        { name: "Logs", value: logs },
-                    )
-                    .setFooter({ text: `Issue #${finalSearch.data.items[0].number}`, iconURL: "https://avatars.githubusercontent.com/u/52578041" })
-                ], components: []
-            });
         });
 
         collector.on("end", collected => {
