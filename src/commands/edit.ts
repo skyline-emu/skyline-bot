@@ -1,7 +1,7 @@
 //@ts-ignore
 import config from "../config.json" assert { type: "json" };
 import { ChatInputCommandInteraction, SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder, ChannelType, Message } from "discord.js";
-import { AccessLevel } from "../common/commonFunctions.js";
+import { AccessLevel, isSnowflake } from "../common/commonFunctions.js";
 
 export const command = {
     data: new SlashCommandBuilder()
@@ -28,17 +28,17 @@ export const command = {
     level: AccessLevel.Admin,
     async execute(interaction: ChatInputCommandInteraction) {
         let channel : any = interaction.options.getChannel("channel");
-        let messageId = interaction.options.getString("message");
+        let messageId = interaction.options.getString("message")!;
         let message : Message;
 
-        if (!/^\d{15,20}$/.test(messageId!))
+        if (!isSnowflake(messageId))
             return interaction.reply({ content: "Submission is not a snowflake", ephemeral: true });
         
         try {
             message = await channel.messages.fetch(messageId);
         } catch (err) {
             console.error(err);
-            return interaction.reply({ content: "Unknown Message", ephemeral: true });
+            return interaction.reply({ content: "Unknown message", ephemeral: true });
         }
         
         if (message.author.id != interaction.client.user.id)

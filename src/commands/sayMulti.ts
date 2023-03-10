@@ -75,4 +75,3 @@ export const command = {
             .catch(console.error);
     }
 };
-//MODAL

@@ -20,7 +20,6 @@ Download the code and extract it to a folder. Run `npm i` from inside the projec
 To start the bot, run `npm run tscw`. This is a script that will allow users to make changes to the code that will be detected and recompiled as they are made.
 ### Step 4: Deploy commands 
 Anytime a command's `data` property is modified or a new command is created, use `npm run update` to update the command list.
-
 ## Notes
 * Skyline Bot is written in TypeScript to allow for compile-time error checking. Skyline Bot is also written completely using the ECMAScript standard for added concision and convenience. 
 * To set command permissions beyond the defaults, you'll need to edit them in server settings.
