@@ -22,7 +22,7 @@ export const command = {
         let gitSearchTitles = [];
 
         if (gitSearch.data.items.length <= 0){
-            interaction.reply("No results found! Check for spelling errors, or manually test and add issue [here](https://github.com/skyline-emu/skyline-games-list/issues).");
+            interaction.reply("No results found; check for spelling errors, or manually test and add issue [here](https://github.com/skyline-emu/skyline-games-list/issues)");
             return;
         }
 
@@ -111,7 +111,7 @@ export const command = {
                 interaction.editReply({
                     embeds: [new EmbedBuilder()
                         .setTitle("Error")
-                        .setDescription("No game selected within 30 seconds! Please try again.")
+                        .setDescription("No game selected within 30 seconds; please try again")
                         .setColor("Red")
                     ], components: []
                 });

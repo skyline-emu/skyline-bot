@@ -3,7 +3,7 @@ import { Events, GuildTextBasedChannel, Interaction } from "discord.js";
 export const event = {
     name: Events.InteractionCreate,
     async execute(interaction: Interaction) {
-        console.log(`${interaction.user.tag} triggered an interaction in #${(interaction.channel as GuildTextBasedChannel)!.name}.`);
+        console.log(`${interaction.user.tag} triggered an interaction in #${(interaction.channel as GuildTextBasedChannel)!.name}`);
 
         if (!interaction.isChatInputCommand()) return;
 
@@ -11,7 +11,7 @@ export const event = {
         const command = interaction.client.commands.get(interaction.commandName);
     
         if (!command) {
-            console.error(`No command matching ${interaction.commandName} was found.`);
+            console.error(`No command matching ${interaction.commandName} was found`);
             return;
         }
 

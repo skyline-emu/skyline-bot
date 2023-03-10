@@ -24,11 +24,11 @@ for (const file of commandFiles) {
         case AccessLevel.User:
             break;
         case undefined:
-            throw console.error(`\nNo AccessLevel provided for "${command.data.name}" command! Add "level" property to command file`);
+            throw console.error(`\nNo AccessLevel provided for "${command.data.name}" command; add "level" property to command file`);
         default:
             let options = Object.keys(AccessLevel).filter((v) => isNaN(Number(v)));
             options.forEach((value, index) => options.splice(index, 1, `AccessLevel.${value}`));
-            throw console.error(`\nAccessLevel provided for "${command.data.name}" command is invalid! Valid options are ${options.join(", ")}`);
+            throw console.error(`\nAccessLevel provided for "${command.data.name}" command is invalid; valid options are ${options.join(", ")}`);
     }
     commands.push(command.data.toJSON());
 }
@@ -38,14 +38,14 @@ const rest = new REST({ version: "10" }).setToken(config.token);
 // Fully update all commands
 (async () => {
     try {
-        console.log(`Started updating ${commands.length} slash commands.`);
+        console.log(`Started updating ${commands.length} slash commands`);
 
         const data : any = await rest.put(
             Routes.applicationGuildCommands(config.clientId, config.guildId),
             { body: commands }, // To delete registered commands: { body : [] }
         );
 
-        console.log(`Successfully updated ${data.length} slash commands.`);
+        console.log(`Successfully updated ${data.length} slash commands`);
     } catch (error) {
         console.error(error);
     }
