@@ -27,7 +27,7 @@
     "@octokit/rest": "^19.0.5",
     "@types/node-fetch": "^2.6.2",
     "@types/ws": "^8.5.4",
-    "discord.js": "^14",
+    "discord.js": "^14.8.0",
     "node-fetch": "^3.3.0"
   },
   "devDependencies": {
