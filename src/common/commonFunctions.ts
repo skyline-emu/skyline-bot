@@ -15,7 +15,7 @@ export enum AccessLevel {
  * @return If the tested string is a snowflake or not
  */
 export function isSnowflake(testString: string) {
-    return (/^\d{15,20}$/.test(testString));
+    return (/^\d{17,19}$/.test(testString));
 }
 
 /** 
