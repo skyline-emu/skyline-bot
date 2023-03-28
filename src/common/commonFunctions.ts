@@ -59,6 +59,15 @@ export function userHasAccess(user: User, guild: Guild, level: AccessLevel) {
 }
 
 /** 
+ * @param user The user to check the permissions of
+ * @param guild The guild to check permissions in
+ * @returns If the supplied user is a normal user
+ */
+export function isNormalUser(user: User, guild: Guild) {
+    return (!userHasAccess(user, guild, AccessLevel.Admin) && !userHasAccess(user, guild, AccessLevel.Moderator) && !userHasAccess(user, guild, AccessLevel.Helper));
+}
+
+/** 
  * @param message The message to serialize
  * @returns The message in a format that can be displayed
  */
