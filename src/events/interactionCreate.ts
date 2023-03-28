@@ -1,4 +1,7 @@
+//@ts-ignore
+import config from "../config.json" assert { type: "json" };
 import { Events, GuildTextBasedChannel, Interaction } from "discord.js";
+import { isNormalUser } from "../common/commonFunctions.js";
 
 export const event = {
     name: Events.InteractionCreate,
@@ -6,6 +9,11 @@ export const event = {
         console.log(`${interaction.user.tag} triggered an interaction in #${(interaction.channel as GuildTextBasedChannel)!.name}`);
 
         if (!interaction.isChatInputCommand()) return;
+
+        //Attachment-only channel filter (for commands)
+        if (config.attachmentOnlyChannels.includes(interaction.channel!.id) && isNormalUser(interaction.user, interaction.guild!)) {
+            return interaction.reply({ content: "Commands cannot be used in this channel", ephemeral: true });
+        }
 
         //If it's a command, execute it
         const command = interaction.client.commands.get(interaction.commandName);
