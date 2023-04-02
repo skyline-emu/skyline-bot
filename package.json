@@ -2,11 +2,13 @@
   "name": "skyline-bot",
   "version": "1.0.0",
   "description": "This is the bot for the official Skyline Emulator Discord Server",
+  "type": "module",
   "main": "main.js",
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "start": "tsc --build && node build/main.js",
+    "update": "tsc --build && node build/common/updateCommands.js",
     "tscw": "tsc-watch --onSuccess \"node ./build/main.js\"",
     "lint": "eslint . --ext .ts",
     "lint-fix": "eslint . --ext .ts --fix"
@@ -22,21 +24,21 @@
   },
   "homepage": "https://github.com/skyline-emu/skyline-bot#readme",
   "dependencies": {
-    "@octokit/rest": "^18.12.0",
-    "@types/node-fetch": "^2.6.1",
-    "@types/ws": "^8.5.3",
-    "discord.js": "^13",
-    "node-fetch": "^3.2.4",
-    "typescript": "^4.6.4"
+    "@octokit/rest": "^19.0.5",
+    "@types/node-fetch": "^2.6.2",
+    "@types/ws": "^8.5.4",
+    "discord.js": "^14.8.0",
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
-    "@types/node": "^17.0.35",
-    "@typescript-eslint/eslint-plugin": "^5.26.0",
-    "@typescript-eslint/parser": "^5.26.0",
-    "eslint": "^8.16.0",
+    "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "eslint": "^8.31.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.0.0",
-    "tsc-watch": "^5.0.3"
+    "eslint-plugin-promise": "^6.1.1",
+    "tsc-watch": "^6.0.0",
+    "typescript": "^4.9.4"
   }
 }

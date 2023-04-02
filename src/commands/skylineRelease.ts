@@ -1,17 +1,20 @@
-import { Message, MessageEmbed } from "discord.js";
-import { Command, CommandError, AccessLevel } from "./command";
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { AccessLevel } from "../common/commonFunctions.js";
 import { Octokit } from "@octokit/rest";
 
-const octokit = new Octokit();
+export const command = {
+    data: new SlashCommandBuilder()
+        .setName("skyline-release")
+        .setDescription("The latest release from the specified branch")
+        .addStringOption(option =>
+            option
+                .setName("branch")
+                .setDescription("Branch to retrieve latest release from")),
+    level: AccessLevel.User,
+    async execute(interaction: ChatInputCommandInteraction) {
+        const octokit = new Octokit();
 
-/** This command is used to retrieve the most recent release from a specific branch of the Skyline repository */
-export class Release extends Command {
-    constructor() {
-        super("release", "rl", "The latest release from the specified branch\n`rl {Branch}`", AccessLevel.User);
-    }
-
-    async run(message: Message, args: string[]): Promise<void> {
-        const branch = args[0] ?? "master";
+        const branch = interaction.options.getString("branch") ?? "master";
         const runs = (await octokit.actions.listWorkflowRunsForRepo({
             owner: "skyline-emu",
             repo: "skyline",
@@ -20,7 +23,7 @@ export class Release extends Command {
         })).data;
 
         if (runs.total_count == 0)
-            throw new CommandError(`No GitHub Actions workflow found in '${branch}' branch`);
+            return interaction.reply({ content: `No GitHub Actions workflow found in '${branch}' branch`, ephemeral: true});
 
         let selectedRun = null;
         let releaseArtifact = null;
@@ -56,11 +59,11 @@ export class Release extends Command {
         }
 
         if (selectedRun == null || debugArtifact == null || releaseArtifact == null)
-            throw new CommandError(`No CI GitHub Actions workflow found in '${branch}' branch`);
-
+            return interaction.reply({ content: `No CI GitHub Actions workflow found in '${branch}' branch`, ephemeral: true});
+		
         const commit = selectedRun.head_commit!;
-        var commitTitleIndex = commit.message.indexOf("\n");
-        let embed = new MessageEmbed({
+        let commitTitleIndex = commit.message.indexOf("\n");
+        let embed = new EmbedBuilder({
             "title": commitTitleIndex == -1 ? commit.message : commit.message.substring(0, commitTitleIndex),
             "description": commitTitleIndex != -1 ? commit.message.substring(commitTitleIndex + 1) : undefined,
             "url": selectedRun.html_url,
@@ -85,6 +88,6 @@ export class Release extends Command {
             ]
         });
 
-        await message.channel.send({ embeds: [embed] });
+        await interaction.reply({ embeds: [embed] });
     }
-}
+};
