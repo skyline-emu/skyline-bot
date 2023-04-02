@@ -50,14 +50,14 @@ export const command = {
 
         const oldText = new TextInputBuilder()
             .setCustomId("oldText")
-            .setLabel("Original text:")
+            .setLabel("Original text")
             .setMaxLength(2000)
             .setValue(message!.content)
             .setStyle(TextInputStyle.Paragraph);
 
         const newTextInput = new TextInputBuilder()
             .setCustomId("newText")
-            .setLabel("Replacement text:")
+            .setLabel("Replacement text")
             .setMaxLength(2000)
             .setStyle(TextInputStyle.Paragraph)
             .setRequired(true);
