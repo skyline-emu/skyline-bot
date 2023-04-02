@@ -19,15 +19,16 @@ export const command = {
         const gameName = interaction.options.getString("game-name");
         const queryString = gameName + "+repo:skyline-emu/skyline-games-list+type:issues+is:open";
         let gitSearch = await octokit.request("GET /search/issues", { q:queryString });
-        let gitSearchTitles = [];
+        let results = gitSearch.data.items;
 
-        if (gitSearch.data.items.length <= 0){
+        if (results.length <= 0){
             interaction.reply("No results found; check for spelling errors, or manually test and add issue [here](https://github.com/skyline-emu/skyline-games-list/issues)");
             return;
         }
 
-        for (const i of gitSearch.data.items)
-            gitSearchTitles.push(i.title);
+        while(results.length > 25) {
+            results.pop();
+        }
 		
         let embed = new EmbedBuilder()
             .setColor("Blue")
@@ -35,15 +36,11 @@ export const command = {
             .setDescription(`<@${interaction.user.id}> Select your desired game from the list`);
 		
         let rowOptions: APISelectMenuOption[] = [];
-        for (const i of gitSearchTitles) {
-            if (gitSearchTitles.indexOf(i) == 25) {
-                break;
-            } else {
-                rowOptions.push({
-                    label: i,
-                    value: i
-                });
-            }
+        for (const i of results) {
+            rowOptions.push({
+                label: i.title,
+                value: i.title
+            });
         }
 
         const row = new ActionRowBuilder<StringSelectMenuBuilder>()
@@ -51,8 +48,7 @@ export const command = {
                 new StringSelectMenuBuilder()
                     .setCustomId("selectionChoices")
                     .setPlaceholder("Choose a game...")
-                    .addOptions(rowOptions)
-            );
+                    .addOptions(rowOptions));
 		
         let interaction2 = await interaction.reply({ embeds: [embed], components: [row] });
 
@@ -62,13 +58,18 @@ export const command = {
             if (i.user.id != interaction.user.id) {
                 i.reply({ content: "This is not your command; create your own command", ephemeral: true});
             } else {
-                let finalSearch = await octokit.request("GET /search/issues", { q:i.values[0] + "+repo:skyline-emu/skyline-games-list+type:issues+is:open" });
+                let issue = results[0];
+                for (const j of results) {
+                    if (j.title == i.values[0]) {
+                        issue = j;
+                    }
+                }
                 let labelNames = "";
-                for (const i of finalSearch.data.items[0].labels)
+                for (const i of issue.labels)
                     labelNames += `\`${i.name}\` `;
                 if (labelNames == "")
                     labelNames = "none";
-                let body = finalSearch.data.items[0].body!.split("###");
+                let body = issue.body!.split("###");
                 body.splice(0, 2);
                 body.splice(5, 1);
                 body.splice(3, 1);
@@ -92,20 +93,21 @@ export const command = {
                     logs = logs.replace(logs.substring(logs.indexOf("``") + 1, logs.lastIndexOf("``")), "");
                 }
                 
+                let mainEmbed = new EmbedBuilder()
+                    .setColor("Blue")
+                    .setTitle(issue.title)
+                    .setURL(issue.html_url)
+                    .addFields(
+                        { name: "Labels", value: labelNames },
+                        { name: "Device Details", value: deviceDetails.join(" ").replace("  ", " ").replace("  ", " ").replace(/\n|\r/gm, "") },
+                        { name: "Build", value: build },
+                        { name: "Game Behavior", value: body[0].replace("Game Behaviour", "").replace(/!/gm, "").replace("- ", "").substring(0, 1021).concat("...") },
+                        { name: "Logs", value: logs }
+                    )
+                    .setFooter({ text: `Issue #${issue.number}`, iconURL: "https://avatars.githubusercontent.com/u/52578041" });
+
                 interaction.editReply({
-                    embeds: [new EmbedBuilder()
-                        .setColor("Blue")
-                        .setTitle(finalSearch.data.items[0].title)
-                        .setURL(finalSearch.data.items[0].html_url)
-                        .addFields(
-                            { name: "Labels", value: labelNames },
-                            { name: "Device Details", value: deviceDetails.join(" ").replace("  ", " ").replace("  ", " ").replace(/\n|\r/gm, "") },
-                            { name: "Build", value: build },
-                            { name: "Game Behavior", value: body[0].replace("Game Behaviour", "").replace(/!/gm, "").replace("- ", "").substring(0, 1021).concat("...") },
-                            { name: "Logs", value: logs },
-                        )
-                        .setFooter({ text: `Issue #${finalSearch.data.items[0].number}`, iconURL: "https://avatars.githubusercontent.com/u/52578041" })
-                    ], components: []
+                    embeds: [mainEmbed], components: []
                 });
             }
         });
